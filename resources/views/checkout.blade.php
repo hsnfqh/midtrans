@@ -394,6 +394,140 @@
       color: var(--brand-accent);
     }
 
+    /* Coupon / Voucher Section */
+    .coupon-box {
+      margin: 16px 0;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+    }
+
+    .coupon-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .coupon-input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .coupon-input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #ffffff;
+      color: var(--text-main);
+      transition: border-color 0.15s ease;
+    }
+
+    .coupon-input:focus {
+      border-color: var(--brand-accent);
+    }
+
+    .btn-apply-coupon {
+      padding: 8px 14px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-apply-coupon:hover {
+      background: #334155;
+    }
+
+    .coupon-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .coupon-chip-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .coupon-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .coupon-chip:hover {
+      background: #bae6fd;
+      transform: translateY(-1px);
+    }
+
+    .coupon-alert {
+      font-size: 11px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      display: none;
+      line-height: 1.4;
+    }
+
+    .coupon-alert.success {
+      display: block;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .coupon-alert.error {
+      display: block;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .discount-row {
+      color: #059669 !important;
+      font-weight: 600;
+      display: none;
+    }
+
+    .discount-row.active {
+      display: flex !important;
+    }
+
+    .btn-remove-coupon {
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 6px;
+      text-decoration: underline;
+      padding: 0;
+    }
+
     .btn-pay {
       width: 100%;
       background: var(--brand-accent);
@@ -646,11 +780,35 @@
             <!-- Rendered by JS -->
           </div>
 
-          <!-- Rincian Biaya -->
+          <!-- Input kupon voucher -->
+          <div class="coupon-box">
+            <div class="coupon-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <span>Punya Kupon / Kode Promo?</span>
+            </div>
+            <div class="coupon-input-group">
+              <input type="text" id="couponInput" class="coupon-input" placeholder="Contoh: DISKON50" />
+              <button type="button" id="btnApplyCoupon" class="btn-apply-coupon">Pakai</button>
+            </div>
+            <div class="coupon-tags">
+              <span class="coupon-chip" onclick="quickApplyCoupon('DISKON50')">⚡ DISKON50</span>
+              <span class="coupon-chip" onclick="quickApplyCoupon('KOPIGRATIS')">☕ KOPIGRATIS</span>
+              <span class="coupon-chip" onclick="quickApplyCoupon('HEMAT10K')">🏷️ HEMAT10K</span>
+            </div>
+            <div id="couponAlert" class="coupon-alert"></div>
+          </div>
+
           <div class="pricing-breakdown">
             <div class="price-row">
               <span>Subtotal Produk</span>
               <span id="subtotalAmount">Rp 0</span>
+            </div>
+            <div class="price-row discount-row" id="discountRow">
+              <span>
+                Diskon Kupon (<span id="appliedCouponCode"></span>)
+                <button type="button" class="btn-remove-coupon" id="btnRemoveCoupon" title="Hapus kupon">[hapus]</button>
+              </span>
+              <span id="discountAmountText">-Rp 0</span>
             </div>
             <div class="price-row">
               <span>Biaya Layanan / Admin</span>
@@ -665,7 +823,6 @@
             </div>
           </div>
 
-          <!-- Tombol Bayar -->
           <button type="button" class="btn-pay" id="payButton">
             <span class="btn-pay-text">Bayar Sekarang &rarr;</span>
             <span class="btn-pay-spinner" style="display: none;">Memproses Midtrans...</span>
@@ -681,7 +838,6 @@
     </div>
   </main>
 
-  <!-- Modal Bukti Status Pembayaran -->
   <div class="modal-overlay" id="receiptModal">
     <div class="modal-card">
       <div class="receipt-icon-wrapper" id="receiptIconWrapper"></div>
@@ -695,9 +851,11 @@
   </div>
 
   <script>
-    // State Produk dari Controller Laravel
     const products = @json($products);
     const ADMIN_FEE = {{ $adminFee }};
+
+    // State kupon aktif
+    let appliedCoupon = null;
 
     function formatRupiah(amount) {
       return new Intl.NumberFormat('id-ID', {
@@ -707,17 +865,20 @@
       }).format(amount);
     }
 
+    function calculateSubtotal() {
+      return products
+        .filter(p => p.quantity > 0)
+        .reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+    }
+
     function renderCart() {
       const cartContainer = document.getElementById('cartItemsList');
       if (!cartContainer) return;
 
       cartContainer.innerHTML = '';
-      let subtotal = 0;
+      const subtotal = calculateSubtotal();
 
       products.forEach((prod, index) => {
-        const itemTotal = prod.price * prod.quantity;
-        subtotal += itemTotal;
-
         const itemEl = document.createElement('div');
         itemEl.className = 'cart-item';
         itemEl.innerHTML = `
@@ -734,7 +895,31 @@
         cartContainer.appendChild(itemEl);
       });
 
-      const grandTotal = subtotal > 0 ? subtotal + ADMIN_FEE : 0;
+      // Hitung diskon kupon
+      let discountAmount = 0;
+      if (appliedCoupon && subtotal > 0) {
+        if (appliedCoupon.type === 'percent') {
+          discountAmount = Math.round((appliedCoupon.value / 100) * subtotal);
+          if (appliedCoupon.max_discount && discountAmount > appliedCoupon.max_discount) {
+            discountAmount = appliedCoupon.max_discount;
+          }
+        } else {
+          discountAmount = Math.min(appliedCoupon.value, subtotal);
+        }
+      } else if (subtotal === 0) {
+        appliedCoupon = null;
+      }
+
+      const discountRow = document.getElementById('discountRow');
+      if (appliedCoupon && discountAmount > 0) {
+        discountRow.classList.add('active');
+        document.getElementById('appliedCouponCode').textContent = appliedCoupon.code;
+        document.getElementById('discountAmountText').textContent = '-' + formatRupiah(discountAmount);
+      } else {
+        discountRow.classList.remove('active');
+      }
+
+      const grandTotal = subtotal > 0 ? Math.max(1000, subtotal - discountAmount + ADMIN_FEE) : 0;
 
       document.getElementById('subtotalAmount').textContent = formatRupiah(subtotal);
       document.getElementById('adminFeeAmount').textContent = formatRupiah(subtotal > 0 ? ADMIN_FEE : 0);
@@ -757,14 +942,99 @@
       }
     };
 
+    window.quickApplyCoupon = function (code) {
+      document.getElementById('couponInput').value = code;
+      handleApplyCoupon();
+    };
+
+    // Validasi kupon ke server
+    async function handleApplyCoupon() {
+      const couponInput = document.getElementById('couponInput');
+      const couponAlert = document.getElementById('couponAlert');
+      const code = couponInput.value.trim().toUpperCase();
+      const subtotal = calculateSubtotal();
+
+      if (!code) {
+        showCouponAlert('Masukkan kode kupon terlebih dahulu.', 'error');
+        return;
+      }
+
+      if (subtotal <= 0) {
+        showCouponAlert('Pilih minimal 1 produk sebelum memasang kupon.', 'error');
+        return;
+      }
+
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      try {
+        const response = await fetch("{{ route('coupon.check') }}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            coupon_code: code,
+            subtotal: subtotal
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          appliedCoupon = {
+            code: data.coupon_code,
+            type: data.discount_type,
+            value: data.discount_value,
+            amount: data.discount_amount,
+            max_discount: data.max_discount
+          };
+          showCouponAlert(data.message, 'success');
+          renderCart();
+        } else {
+          showCouponAlert(data.message || 'Kupon tidak dapat digunakan.', 'error');
+        }
+      } catch (err) {
+        showCouponAlert('Gagal memeriksa kupon: ' + err.message, 'error');
+      }
+    }
+
+    function showCouponAlert(msg, type) {
+      const alertEl = document.getElementById('couponAlert');
+      alertEl.textContent = msg;
+      alertEl.className = `coupon-alert ${type}`;
+    }
+
+    function removeCoupon() {
+      appliedCoupon = null;
+      document.getElementById('couponInput').value = '';
+      const alertEl = document.getElementById('couponAlert');
+      alertEl.className = 'coupon-alert';
+      alertEl.textContent = '';
+      renderCart();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       renderCart();
 
       const payButton = document.getElementById('payButton');
       const closeReceiptBtn = document.getElementById('closeReceiptBtn');
       const receiptModal = document.getElementById('receiptModal');
+      const btnApplyCoupon = document.getElementById('btnApplyCoupon');
+      const btnRemoveCoupon = document.getElementById('btnRemoveCoupon');
+      const couponInput = document.getElementById('couponInput');
 
       payButton.addEventListener('click', handlePaymentCheckout);
+
+      btnApplyCoupon.addEventListener('click', handleApplyCoupon);
+      btnRemoveCoupon.addEventListener('click', removeCoupon);
+      couponInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleApplyCoupon();
+        }
+      });
 
       closeReceiptBtn.addEventListener('click', () => {
         receiptModal.classList.remove('active');
@@ -787,8 +1057,20 @@
         return;
       }
 
-      const subtotal = activeItems.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
-      const grandTotal = subtotal + ADMIN_FEE;
+      const subtotal = calculateSubtotal();
+      let discountAmount = 0;
+      if (appliedCoupon) {
+        if (appliedCoupon.type === 'percent') {
+          discountAmount = Math.round((appliedCoupon.value / 100) * subtotal);
+          if (appliedCoupon.max_discount && discountAmount > appliedCoupon.max_discount) {
+            discountAmount = appliedCoupon.max_discount;
+          }
+        } else {
+          discountAmount = Math.min(appliedCoupon.value, subtotal);
+        }
+      }
+
+      const grandTotal = Math.max(1000, subtotal - discountAmount + ADMIN_FEE);
 
       const itemDetails = activeItems.map(p => ({
         id: p.id,
@@ -797,7 +1079,6 @@
         name: p.name
       }));
 
-      // Tambahkan baris biaya admin ke rincian
       itemDetails.push({
         id: 'FEE-ADMIN',
         price: ADMIN_FEE,
@@ -816,7 +1097,6 @@
       try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Request token ke Controller Laravel
         const response = await fetch("{{ route('payment.snapToken') }}", {
           method: 'POST',
           headers: {
@@ -829,7 +1109,8 @@
             items: itemDetails,
             customer_name: customerName,
             customer_email: customerEmail,
-            customer_phone: customerPhone
+            customer_phone: customerPhone,
+            coupon_code: appliedCoupon ? appliedCoupon.code : null
           })
         });
 
@@ -839,15 +1120,8 @@
           throw new Error(data.message || 'Gagal memproses pembayaran ke server Midtrans.');
         }
 
-        // Panggil popup Midtrans Snap
         window.snap.pay(data.snap_token, {
           onSuccess: function (result) {
-            console.log('[Midtrans Success]:', result);
-
-            // =========================================================================
-            // [SINKRONISASI DATABASE OTOMATIS]:
-            // Beritahu backend Laravel untuk cek status ke Midtrans & ubah status jadi 'paid'
-            // =========================================================================
             fetch(`{{ url('/orders') }}/${result.order_id}/check`, {
               headers: { 'Accept': 'application/json' }
             }).catch(e => console.log('Sync error:', e));
@@ -863,7 +1137,6 @@
             resetPayButton();
           },
           onPending: function (result) {
-            console.log('[Midtrans Pending]:', result);
             let extraInfo = '';
             if (result.va_numbers && result.va_numbers.length > 0) {
               extraInfo = `${result.va_numbers[0].bank.toUpperCase()} VA: ${result.va_numbers[0].va_number}`;
@@ -883,18 +1156,15 @@
             resetPayButton();
           },
           onError: function (result) {
-            console.error('[Midtrans Error]:', result);
             alert('Pembayaran gagal atau ditolak oleh sistem Midtrans.');
             resetPayButton();
           },
           onClose: function () {
-            console.log('[Midtrans Closed] Popup ditutup pengguna.');
             resetPayButton();
           }
         });
 
       } catch (err) {
-        console.error('Error:', err);
         alert(err.message || 'Terjadi kesalahan saat checkout.');
         resetPayButton();
       }

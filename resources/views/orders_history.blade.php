@@ -152,7 +152,6 @@
                     $cleanPhone = '62' . substr($cleanPhone, 1);
                 }
 
-                // 2. Susun teks pesan WhatsApp otomatis (Mini Challenge bisa modif ini)
                 $nominalRp = number_format($order->gross_amount, 0, ',', '.');
                 $waMessage = "Halo Kak {$order->customer_name}! ☕\n\n"
                            . "Terima kasih banyak telah berbelanja di *Kala Coffee Roastery*.\n\n"
@@ -196,17 +195,14 @@
                 <td>
                   <div class="actions-cell">
                     @if($order->status === 'paid')
-                      <!-- [FITUR BARU] Tombol Kirim WhatsApp -->
-                      <a href="{{ $waUrl }}" target="_blank" class="btn-action btn-wa" title="Buka WhatsApp dengan pesan otomatis">
+                      <a href="{{ $waUrl }}" target="_blank" class="btn-action btn-wa" title="Buka WhatsApp">
                         <span>💬</span> Kirim Notif WA
                       </a>
 
-                      <!-- [FITUR BARU] Tombol Preview Email Struk -->
-                      <a href="{{ route('payment.emailPreview', $order->order_id) }}" target="_blank" class="btn-action btn-email" title="Lihat template email struk HTML">
+                      <a href="{{ route('payment.emailPreview', $order->order_id) }}" target="_blank" class="btn-action btn-email" title="Lihat template email struk">
                         <span>📧</span> Lihat Struk Email
                       </a>
                     @elseif($order->status === 'pending')
-                      <!-- Tombol Cek Sinkronisasi Midtrans -->
                       <a href="{{ route('payment.checkStatus', $order->order_id) }}" class="btn-action btn-check">
                         <span>🔄</span> Cek Status Midtrans
                       </a>

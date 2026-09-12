@@ -1,9 +1,3 @@
-{{-- 
-  =============================================================================
-  [FILE BARU: TEMPLATE EMAIL STRUK KONFIRMASI PEMBAYARAN]
-  File ini merender tampilan invoice / bukti pembayaran resmi untuk pelanggan.
-  =============================================================================
---}}
 <!DOCTYPE html>
 <html lang="id">
 <head>

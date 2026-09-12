@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order; // Model Order untuk membaca & menyimpan ke tabel 'orders' di MySQL
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Midtrans\Notification;
-use Midtrans\Transaction; // Digunakan untuk mengecek status langsung ke Midtrans API
+use Midtrans\Transaction;
 
 class PaymentController extends Controller
 {
-    /**
-     * Inisialisasi konfigurasi Midtrans
-     */
     protected function initMidtrans()
     {
         MidtransConfig::$serverKey = config('midtrans.server_key');
@@ -22,12 +19,8 @@ class PaymentController extends Controller
         MidtransConfig::$is3ds = config('midtrans.is_3ds');
     }
 
-    /**
-     * Menampilkan halaman checkout toko
-     */
     public function index()
     {
-        // Data produk simulasi toko kopi
         $products = [
             [
                 'id'       => 'PROD-01',
@@ -52,32 +45,150 @@ class PaymentController extends Controller
         return view('checkout', compact('products', 'adminFee', 'clientKey', 'isProduction'));
     }
 
-    /**
-     * LANGKAH 1 (DATABASE):
-     * Simpan data order ke MySQL dengan status 'pending',
-     * lalu minta Snap Token ke Midtrans dan simpan token tersebut ke database.
-     */
+    // Daftar kupon promo toko
+    protected function getCoupons()
+    {
+        return [
+            'DISKON50' => [
+                'type'         => 'percent',
+                'value'        => 50,
+                'max_discount' => 75000,
+                'min_spend'    => 50000,
+                'desc'         => 'Diskon 50% (Maks. Rp 75.000)'
+            ],
+            'KOPIGRATIS' => [
+                'type'         => 'fixed',
+                'value'        => 25000,
+                'max_discount' => 25000,
+                'min_spend'    => 30000,
+                'desc'         => 'Potongan Langsung Rp 25.000'
+            ],
+            'HEMAT10K' => [
+                'type'         => 'fixed',
+                'value'        => 10000,
+                'max_discount' => 10000,
+                'min_spend'    => 20000,
+                'desc'         => 'Potongan Langsung Rp 10.000'
+            ],
+            'BELAJARCODING' => [
+                'type'         => 'fixed',
+                'value'        => 50000,
+                'max_discount' => 50000,
+                'min_spend'    => 100000,
+                'desc'         => 'Spesial Belajar Coding Potongan Rp 50.000'
+            ]
+        ];
+    }
+
+    // Cek validitas kupon via AJAX
+    public function checkCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string|max:50',
+            'subtotal'    => 'required|numeric|min:0'
+        ]);
+
+        $code = strtoupper(trim($request->coupon_code));
+        $subtotal = (int) $request->subtotal;
+        $coupons = $this->getCoupons();
+
+        if (!isset($coupons[$code])) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Kode kupon '{$code}' tidak ditemukan atau sudah kadaluarsa."
+            ], 422);
+        }
+
+        $coupon = $coupons[$code];
+
+        if ($subtotal < $coupon['min_spend']) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Minimal belanja untuk kupon ini adalah Rp " . number_format($coupon['min_spend'], 0, ',', '.')
+            ], 422);
+        }
+
+        $discountAmount = 0;
+        if ($coupon['type'] === 'percent') {
+            $discountAmount = (int) round(($coupon['value'] / 100) * $subtotal);
+            if ($discountAmount > $coupon['max_discount']) {
+                $discountAmount = $coupon['max_discount'];
+            }
+        } else {
+            $discountAmount = min($coupon['value'], $subtotal);
+        }
+
+        return response()->json([
+            'status'          => 'success',
+            'coupon_code'     => $code,
+            'discount_type'   => $coupon['type'],
+            'discount_value'  => $coupon['value'],
+            'discount_amount' => $discountAmount,
+            'description'     => $coupon['desc'],
+            'message'         => "Kupon {$code} berhasil dipasang!"
+        ]);
+    }
+
     public function createSnapToken(Request $request)
     {
-        // Validasi input data dari form di browser
         $request->validate([
             'customer_name'  => 'required|string|max:100',
             'customer_email' => 'required|email',
             'customer_phone' => 'required|string|max:20',
             'items'          => 'required|array|min:1',
             'gross_amount'   => 'required|numeric|min:1000',
+            'coupon_code'    => 'nullable|string|max:50',
         ]);
 
         $this->initMidtrans();
 
-        // Buat Order ID unik (contoh: INV-1725261899-432)
         $orderId = 'INV-' . time() . '-' . rand(100, 999);
-        $grossAmount = (int) round($request->gross_amount);
+        
+        $subtotal = 0;
+        $itemDetails = [];
+        foreach ($request->items as $item) {
+            $itemPrice = (int) round($item['price']);
+            $itemQty   = (int) $item['quantity'];
+            $subtotal += ($itemPrice * $itemQty);
 
-        // =========================================================================
-        // [TAMBAHAN DATABASE]: Simpan order baru ke tabel 'orders' di MySQL
-        // Status awal pesanan adalah 'pending' (menunggu dibayar oleh pembeli)
-        // =========================================================================
+            $itemDetails[] = [
+                'id'       => $item['id'],
+                'price'    => $itemPrice,
+                'quantity' => $itemQty,
+                'name'     => substr($item['name'], 0, 50),
+            ];
+        }
+
+        // Hitung potongan diskon kupon
+        $discountAmount = 0;
+        $couponCode = strtoupper(trim($request->coupon_code ?? ''));
+        $coupons = $this->getCoupons();
+
+        if ($couponCode && isset($coupons[$couponCode])) {
+            $coupon = $coupons[$couponCode];
+            if ($subtotal >= $coupon['min_spend']) {
+                if ($coupon['type'] === 'percent') {
+                    $discountAmount = (int) round(($coupon['value'] / 100) * $subtotal);
+                    if ($discountAmount > $coupon['max_discount']) {
+                        $discountAmount = $coupon['max_discount'];
+                    }
+                } else {
+                    $discountAmount = min($coupon['value'], $subtotal);
+                }
+
+                if ($discountAmount > 0) {
+                    $itemDetails[] = [
+                        'id'       => 'DISC-' . substr($couponCode, 0, 10),
+                        'price'    => -$discountAmount,
+                        'quantity' => 1,
+                        'name'     => 'Diskon Kupon ' . $couponCode,
+                    ];
+                }
+            }
+        }
+
+        $grossAmount = max(1000, (int) round($subtotal - $discountAmount));
+
         $order = Order::create([
             'order_id'       => $orderId,
             'customer_name'  => $request->customer_name,
@@ -87,18 +198,6 @@ class PaymentController extends Controller
             'status'         => 'pending',
         ]);
 
-        // Siapkan detail item untuk Midtrans
-        $itemDetails = [];
-        foreach ($request->items as $item) {
-            $itemDetails[] = [
-                'id'       => $item['id'],
-                'price'    => (int) round($item['price']),
-                'quantity' => (int) $item['quantity'],
-                'name'     => substr($item['name'], 0, 50),
-            ];
-        }
-
-        // Parameter transaksi untuk dikirim ke API Midtrans
         $params = [
             'transaction_details' => [
                 'order_id'     => $orderId,
@@ -117,24 +216,21 @@ class PaymentController extends Controller
         ];
 
         try {
-            // Minta Snap Token dari server Midtrans
             $snapToken = Snap::getSnapToken($params);
 
-            // =========================================================================
-            // [TAMBAHAN DATABASE]: Simpan snap_token ke database agar tersimpan di order
-            // =========================================================================
             $order->update([
                 'snap_token' => $snapToken
             ]);
 
             return response()->json([
-                'status'     => 'success',
-                'snap_token' => $snapToken,
-                'order_id'   => $orderId,
-                'amount'     => $grossAmount
+                'status'          => 'success',
+                'snap_token'      => $snapToken,
+                'order_id'        => $orderId,
+                'amount'          => $grossAmount,
+                'discount_amount' => $discountAmount,
+                'coupon_code'     => $couponCode
             ]);
         } catch (\Exception $e) {
-            // Jika gagal mendapatkan Snap Token, tandai status order jadi 'failed'
             $order->update(['status' => 'failed']);
 
             return response()->json([
@@ -144,11 +240,6 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * LANGKAH 2 (DATABASE & WEBHOOK):
-     * Menerima notifikasi resmi dari Midtrans ketika pembayaran sudah lunas / gagal / kadaluarsa,
-     * lalu otomatis meng-update status transaksi di tabel 'orders' MySQL.
-     */
     public function callback(Request $request)
     {
         $this->initMidtrans();
@@ -156,12 +247,11 @@ class PaymentController extends Controller
         try {
             $notif = new Notification();
 
-            $transaction = $notif->transaction_status; // settlement, capture, pending, expire, cancel
-            $type        = $notif->payment_type;       // bca_va, qris, gopay, credit_card, dll
+            $transaction = $notif->transaction_status;
+            $type        = $notif->payment_type;
             $orderId     = $notif->order_id;
             $fraud       = $notif->fraud_status;
 
-            // Cari data order di tabel 'orders' MySQL berdasarkan order_id
             $order = Order::where('order_id', $orderId)->first();
 
             if (!$order) {
@@ -171,13 +261,6 @@ class PaymentController extends Controller
                 ], 404);
             }
 
-            // =========================================================================
-            // [LOGIKA STATUS PEMBAYARAN MIDTRANS]:
-            // - 'settlement' / 'capture': Uang sudah masuk -> ubah status jadi 'paid' (Lunas)
-            // - 'pending': Menunggu pembeli transfer ke VA / scan QRIS -> status tetap 'pending'
-            // - 'expire': Waktu bayar habis -> ubah status jadi 'expired'
-            // - 'cancel' / 'deny': Ditolak / Dibatalkan -> ubah status jadi 'failed'
-            // =========================================================================
             if ($transaction == 'capture') {
                 if ($fraud == 'challenge') {
                     $order->status = 'challenge';
@@ -196,7 +279,6 @@ class PaymentController extends Controller
                 $order->status = 'failed';
             }
 
-            // Simpan jenis metode bayar & respon mentah Midtrans ke database
             $order->payment_type = $type;
             $order->payment_response = $notif->getResponse();
             $order->save();
@@ -213,21 +295,12 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * LANGKAH 3 (PEMBELAJARAN):
-     * Halaman untuk melihat semua riwayat transaksi yang tersimpan di MySQL.
-     * Mengapa ada auto-sync?
-     * Karena di localhost (127.0.0.1), webhook Midtrans dari internet tidak bisa
-     * menembus masuk ke laptop kita (tanpa Ngrok). Jadi saat halaman ini dibuka,
-     * Laravel akan otomatis bertanya ke Midtrans API untuk memperbarui status pesanan pending!
-     */
     public function history()
     {
         $this->initMidtrans();
 
         $orders = Order::latest()->get();
 
-        // Cek dan sinkronkan pesanan yang masih 'pending' langsung ke server Midtrans
         foreach ($orders as $order) {
             if ($order->status === 'pending') {
                 try {
@@ -250,7 +323,6 @@ class PaymentController extends Controller
                         $order->save();
                     }
                 } catch (\Exception $e) {
-                    // Abaikan jika order belum pernah diinput di simulator
                 }
             }
         }
@@ -258,9 +330,6 @@ class PaymentController extends Controller
         return view('orders_history', compact('orders'));
     }
 
-    /**
-     * Endpoint untuk sinkronisasi manual 1 pesanan via tombol atau AJAX
-     */
     public function checkStatus($orderId)
     {
         $this->initMidtrans();
@@ -285,14 +354,6 @@ class PaymentController extends Controller
             }
             $order->save();
 
-            // =========================================================================
-            // [FITUR BARU: NOTIFIKASI EMAIL]
-            // Jika status baru saja berubah menjadi paid, simulasikan pengiriman email ke log
-            // =========================================================================
-            if ($order->status === 'paid') {
-                \Log::info("📧 [SIMULASI EMAIL NOTIFIKASI] Sukses dikirim ke: {$order->customer_email} untuk Order: {$order->order_id} (Total: Rp {$order->gross_amount})");
-            }
-
             if (request()->wantsJson()) {
                 return response()->json([
                     'status'         => 'success',
@@ -310,18 +371,9 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * =========================================================================
-     * [FITUR BARU: PREVIEW STRUK EMAIL]
-     * LANGKAH 4 (PEMBELAJARAN NOTIFIKASI EMAIL):
-     * Menampilkan desain email konfirmasi pembayaran lunas di browser.
-     * Siswa bisa melihat bagaimana email transaksi e-commerce terlihat nyata!
-     * =========================================================================
-     */
     public function previewEmail($orderId)
     {
         $order = Order::where('order_id', $orderId)->firstOrFail();
         return view('emails.payment_success', compact('order'));
     }
 }
-
