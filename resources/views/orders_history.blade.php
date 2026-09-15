@@ -17,21 +17,6 @@
     .nav-btn { text-decoration: none; font-size: 13px; font-weight: 700; color: #0f766e; background: #ccfbf1; padding: 8px 16px; border-radius: 8px; transition: 0.2s; }
     .nav-btn:hover { background: #99f6e4; }
 
-    /* Learning Info Box */
-    .learning-box {
-      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-      border: 1px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-    }
-    .learning-icon { font-size: 24px; }
-    .learning-title { font-size: 14px; font-weight: 800; color: #1e40af; margin-bottom: 4px; }
-    .learning-desc { font-size: 13px; color: #1e3a8a; line-height: 1.5; }
-
     .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .card-title { font-size: 18px; font-weight: 700; }
@@ -93,32 +78,19 @@
   <header class="header">
     <div class="container header-inner">
       <div class="brand">
-        <span>☕</span> Kala Coffee Roastery - Data Transaksi & Notifikasi
+        <span>☕</span> Kala Coffee Roastery - Data Transaksi & Pengiriman
       </div>
       <a href="{{ route('payment.index') }}" class="nav-btn">+ Buat Pesanan Baru</a>
     </div>
   </header>
 
   <main class="container">
-    
-    <!-- Learning Box Banner -->
-    <div class="learning-box">
-      <div class="learning-icon">💡</div>
-      <div>
-        <div class="learning-title">Materi Belajar Hari Ini: Notifikasi Pembayaran Otomatis</div>
-        <div class="learning-desc">
-          Saat pesanan sudah berstatus <strong>LUNAS (PAID)</strong>, sistem menyediakan 2 tombol notifikasi:
-          <strong>Kirim Notif WhatsApp</strong> (merangkai pesan otomatis) dan <strong>Lihat Struk Email</strong> (desain surat tagihan HTML).
-        </div>
-      </div>
-    </div>
-
     <div class="card">
       <div class="card-header">
         <div>
           <h2 class="card-title">Daftar Transaksi (MySQL <code>orders</code>)</h2>
           <p style="font-size: 13px; color: #64748b; margin-top: 4px;">
-            Setiap perubahan status dari Midtrans akan mengaktifkan aksi notifikasi di bawah ini.
+            Daftar seluruh pesanan pelanggan, rincian kurir pengiriman, dan status pembayaran dari Midtrans.
           </p>
         </div>
         <button onclick="window.location.reload()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; cursor: pointer;">
@@ -133,7 +105,8 @@
               <th>No</th>
               <th>Order ID</th>
               <th>Pelanggan</th>
-              <th>No. WhatsApp</th>
+              <!-- Kolom Pengiriman / Kurir -->
+              <th>Pengiriman & Ongkir</th>
               <th>Total Bayar</th>
               <th>Metode</th>
               <th>Status</th>
@@ -143,24 +116,24 @@
           <tbody>
             @forelse($orders as $index => $order)
               @php
-                // =====================================================================
-                // [FITUR BARU: NOTIFIKASI WHATSAPP]
-                // 1. Format nomor HP ke standar WhatsApp internasional (628...)
-                // =====================================================================
+                // Format nomor HP ke standar WhatsApp internasional
                 $cleanPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
                 if (str_starts_with($cleanPhone, '0')) {
                     $cleanPhone = '62' . substr($cleanPhone, 1);
                 }
 
                 $nominalRp = number_format($order->gross_amount, 0, ',', '.');
+                $shippingInfo = $order->shipping_courier ? "🚚 *Kurir:* {$order->shipping_courier} ({$order->shipping_service})\n" : "";
+                
                 $waMessage = "Halo Kak {$order->customer_name}! ☕\n\n"
                            . "Terima kasih banyak telah berbelanja di *Kala Coffee Roastery*.\n\n"
                            . "Berikut bukti konfirmasi pembayaranmu:\n"
                            . "📌 *Order ID:* {$order->order_id}\n"
+                           . $shippingInfo
                            . "💰 *Total Bayar:* Rp {$nominalRp}\n"
                            . "💳 *Metode Bayar:* " . strtoupper($order->payment_type ?? 'Midtrans') . "\n"
                            . "✅ *Status:* SUDAH LUNAS (PAID)\n\n"
-                           . "Pesanan kopimu sedang kami siapkan ya! Have a great day! ✨";
+                           . "Pesanan kopimu sedang kami siapkan untuk segera dikirim! Have a great day! ✨";
                 $waUrl = "https://api.whatsapp.com/send?phone={$cleanPhone}&text=" . urlencode($waMessage);
               @endphp
               <tr>
@@ -168,11 +141,27 @@
                 <td><strong><code>{{ $order->order_id }}</code></strong></td>
                 <td>
                   <div style="font-weight: 700;">{{ $order->customer_name }}</div>
-                  <small style="color: #64748b;">{{ $order->customer_email }}</small>
+                  <small style="color: #64748b;">{{ $order->customer_email }}</small><br>
+                  <small style="color: #334155; font-family: monospace;">{{ $order->customer_phone }}</small>
                 </td>
+                
+                <!-- Menampilkan info kurir, ongkir, dan alamat tujuan -->
                 <td>
-                  <span style="font-family: monospace; font-size: 13px; color: #334155;">{{ $order->customer_phone }}</span>
+                  @if($order->shipping_courier)
+                    <div style="font-weight: 700; color: #0f172a;">{{ $order->shipping_courier }}</div>
+                    <div style="font-size: 12px; color: #64748b;">
+                      {{ $order->shipping_cost > 0 ? 'Rp ' . number_format($order->shipping_cost, 0, ',', '.') : 'Gratis Ongkir' }}
+                    </div>
+                    @if($order->shipping_address)
+                      <div style="font-size: 11px; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $order->shipping_address }}">
+                        📍 {{ $order->shipping_address }}
+                      </div>
+                    @endif
+                  @else
+                    <span style="color: #94a3b8; font-style: italic; font-size: 12px;">Standard</span>
+                  @endif
                 </td>
+
                 <td><strong>Rp {{ number_format($order->gross_amount, 0, ',', '.') }}</strong></td>
                 <td>
                   @if($order->payment_type)
@@ -216,7 +205,7 @@
               <tr>
                 <td colspan="8" class="empty-state">
                   <p style="font-size: 16px; font-weight: 600;">Belum ada data transaksi di database</p>
-                  <p style="font-size: 13px; margin-top: 6px;">Silakan buat pesanan baru di halaman checkout untuk mulai belajar.</p>
+                  <p style="font-size: 13px; margin-top: 6px;">Silakan buat pesanan baru di halaman checkout untuk mulai mencoba.</p>
                 </td>
               </tr>
             @endforelse

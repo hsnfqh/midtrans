@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="icon" href="data:,">
-  <title>Simulasi Pembayaran</title>
+  <title>Simulasi Pembayaran Midtrans - Kala Coffee</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -48,7 +48,7 @@
       padding: 0 20px;
     }
 
-    /* Top Banner */
+    /* Top Banner Sandbox */
     .sandbox-banner {
       background-color: #0f172a;
       color: #f1f5f9;
@@ -82,16 +82,7 @@
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
     }
 
-    .badge-laravel {
-      background: #ef4444;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-
-    /* Header */
+    /* Header Navigasi */
     .store-header {
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
@@ -104,32 +95,11 @@
       align-items: center;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-badge {
-      background: #1e293b;
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 1px;
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-    }
-
     .brand-title h1 {
       font-size: 18px;
       font-weight: 700;
       color: var(--text-main);
       line-height: 1.2;
-    }
-
-    .brand-sub {
-      font-size: 12px;
-      color: var(--text-muted);
     }
 
     .header-secure {
@@ -145,7 +115,7 @@
       font-weight: 500;
     }
 
-    /* Main Grid */
+    /* Layout Grid */
     .main-content {
       padding-top: 32px;
       padding-bottom: 60px;
@@ -153,12 +123,12 @@
 
     .checkout-grid {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1fr 430px;
       gap: 28px;
       align-items: start;
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 880px) {
       .checkout-grid {
         grid-template-columns: 1fr;
       }
@@ -253,34 +223,87 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
-    .payment-channels-list {
+    /* Styling untuk Pilihan Kurir & Pengiriman */
+    .shipping-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 14px;
     }
 
-    .channel-item {
+    .shipping-option-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #f8fafc;
-      border: 1px solid #f1f5f9;
-      padding: 12px 16px;
+      padding: 14px 16px;
+      border: 2px solid var(--border-color);
       border-radius: var(--radius-md);
-      font-size: 13px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s ease;
     }
 
-    .channel-badge {
-      font-weight: 600;
-      color: #0f172a;
+    .shipping-option-card:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
     }
 
-    .channel-names {
-      color: var(--text-muted);
+    .shipping-option-card.selected {
+      border-color: var(--brand-accent);
+      background: #f0fdfa;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.12);
+    }
+
+    .shipping-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shipping-icon {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .shipping-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .shipping-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .shipping-service {
       font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    /* Summary Card */
+    .shipping-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brand-accent);
+      text-align: right;
+    }
+
+    /* Rincian Pesanan & Ringkasan */
     .summary-card {
       position: sticky;
       top: 24px;
@@ -352,49 +375,7 @@
       text-align: center;
     }
 
-    .pricing-breakdown {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 20px;
-    }
-
-    .price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .total-row {
-      font-size: 14px;
-      color: var(--text-main);
-      margin-top: 6px;
-      padding-top: 10px;
-      border-top: 1px dashed var(--border-color);
-    }
-
-    .total-label {
-      display: block;
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .total-note {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .total-price {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--brand-accent);
-    }
-
-    /* Coupon / Voucher Section */
+    /* Kupon Promo */
     .coupon-box {
       margin: 16px 0;
       padding: 14px;
@@ -430,7 +411,6 @@
       outline: none;
       background: #ffffff;
       color: var(--text-main);
-      transition: border-color 0.15s ease;
     }
 
     .coupon-input:focus {
@@ -446,12 +426,6 @@
       border: none;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .btn-apply-coupon:hover {
-      background: #334155;
     }
 
     .coupon-tags {
@@ -460,11 +434,6 @@
       align-items: center;
       gap: 6px;
       margin-top: 8px;
-    }
-
-    .coupon-chip-label {
-      font-size: 11px;
-      color: var(--text-muted);
     }
 
     .coupon-chip {
@@ -476,12 +445,6 @@
       border: 1px solid #bae6fd;
       border-radius: 9999px;
       cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .coupon-chip:hover {
-      background: #bae6fd;
-      transform: translateY(-1px);
     }
 
     .coupon-alert {
@@ -507,6 +470,23 @@
       border: 1px solid #fecaca;
     }
 
+    .pricing-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
     .discount-row {
       color: #059669 !important;
       font-weight: 600;
@@ -525,7 +505,26 @@
       cursor: pointer;
       margin-left: 6px;
       text-decoration: underline;
-      padding: 0;
+    }
+
+    .total-row {
+      font-size: 14px;
+      color: var(--text-main);
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .total-label {
+      display: block;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .total-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--brand-accent);
     }
 
     .btn-pay {
@@ -549,13 +548,11 @@
     .btn-pay:hover {
       background: var(--brand-hover);
       box-shadow: 0 6px 14px rgba(15, 118, 110, 0.35);
-      transform: translateY(-1px);
     }
 
     .btn-pay:disabled {
       background: #94a3b8;
       cursor: not-allowed;
-      transform: none;
       box-shadow: none;
     }
 
@@ -569,7 +566,7 @@
       margin-top: 14px;
     }
 
-    /* Modal Receipt */
+    /* Modal Struk */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -668,13 +665,9 @@
       border-radius: var(--radius-md);
       cursor: pointer;
     }
-
-    .btn-primary:hover {
-      background: #0f172a;
-    }
   </style>
 
-  <!-- Midtrans Snap JS Resmi Sandbox -->
+  <!-- Script Midtrans Snap Sandbox -->
   <script 
     src="{{ $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" 
     data-client-key="{{ $clientKey }}">
@@ -682,13 +675,11 @@
 </head>
 <body>
 
-  <!-- Navbar / Header Sederhana -->
+  <!-- Header Navigasi -->
   <header class="store-header">
     <div class="container header-container">
-      <div class="brand">
-        <div class="brand-title">
-          <h1>Simulasi Pembayaran</h1>
-        </div>
+      <div class="brand-title">
+        <h1>Kala Coffee Roastery &bull; Checkout</h1>
       </div>
       <div style="display: flex; align-items: center; gap: 16px;">
         <a href="{{ route('payment.history') }}" style="text-decoration: none; font-size: 13px; font-weight: 600; color: #0f766e; background: #ccfbf1; padding: 6px 14px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
@@ -696,20 +687,20 @@
         </a>
         <div class="header-secure">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span>Pembayaran Aman Midtrans Snap</span>
+          <span>Midtrans Snap Ready</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Layout -->
+  <!-- Konten Utama -->
   <main class="container main-content">
     <div class="checkout-grid">
 
-      <!-- Kolom Kiri: Form Data Pembeli & Info Metode Bayar -->
+      <!-- Kolom Kiri: Data Pembeli, Pengiriman & Opsi Kurir -->
       <section class="checkout-form-section">
         
-        <!-- Kartu Data Pembeli -->
+        <!-- Step 1: Data Pembeli -->
         <div class="card">
           <div class="card-header">
             <span class="step-num">1</span>
@@ -733,58 +724,99 @@
                 <input type="tel" id="customerPhone" class="form-control" placeholder="08123456789" value="081234567890" required>
               </div>
             </div>
-
-            <div class="form-group">
-              <label for="orderNotes">Catatan Pesanan (Opsional)</label>
-              <input type="text" id="orderNotes" class="form-control" placeholder="Contoh: Giling halus untuk tubruk, packing rapi.">
-            </div>
           </form>
         </div>
 
-        <!-- Kartu Pilihan Metode Pembayaran Sandbox -->
+        <!-- Step 2: Alamat & Pilihan Ongkos Kirim Kurir -->
         <div class="card">
           <div class="card-header">
             <span class="step-num">2</span>
-            <h2>Metode Pembayaran Tersedia</h2>
+            <h2>Pengiriman & Pilihan Kurir</h2>
+          </div>
+          <p class="section-desc">Pilih layanan pengiriman yang sesuai untuk pesanan kopi Anda.</p>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="shippingAddress">Alamat Pengiriman Lengkap</label>
+            <textarea id="shippingAddress" class="form-control" rows="2" placeholder="Masukkan jalan, no. rumah/kantor, RT/RW, dan patokan..." required>Jl. Merdeka No. 45, Jakarta Selatan (Samping Coffee Lab)</textarea>
+          </div>
+
+          <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 8px;">
+            Pilih Ekspedisi / Kurir
+          </label>
+
+          <!-- Daftar Kartu Pilihan Kurir -->
+          <div class="shipping-options-list" id="shippingOptionsContainer">
+            @foreach($shippingOptions as $index => $ship)
+              <div 
+                class="shipping-option-card {{ $index === 0 ? 'selected' : '' }}" 
+                data-id="{{ $ship['id'] }}"
+                data-courier="{{ $ship['courier'] }}"
+                data-service="{{ $ship['service'] }}"
+                data-cost="{{ $ship['cost'] }}"
+                onclick="selectShipping('{{ $ship['id'] }}')"
+              >
+                <div class="shipping-left">
+                  <div class="shipping-icon">{{ $ship['icon'] }}</div>
+                  <div>
+                    <div class="shipping-title">
+                      <span>{{ $ship['courier'] }}</span>
+                      <span class="shipping-badge">{{ $ship['badge'] }}</span>
+                    </div>
+                    <div class="shipping-service">{{ $ship['service'] }}</div>
+                  </div>
+                </div>
+                <div class="shipping-price">
+                  {{ $ship['cost'] > 0 ? 'Rp ' . number_format($ship['cost'], 0, ',', '.') : 'GRATIS' }}
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+
+        <!-- Step 3: Metode Pembayaran Tersedia di Midtrans -->
+        <div class="card">
+          <div class="card-header">
+            <span class="step-num">3</span>
+            <h2>Metode Pembayaran Didukung</h2>
           </div>
           <p class="section-desc">Pilihan metode bayar aktif secara otomatis pada popup Midtrans Snap:</p>
           
-          <div class="payment-channels-list">
-            <div class="channel-item">
-              <span class="channel-badge">Virtual Account (VA)</span>
-              <span class="channel-names">BCA, Mandiri, BNI, BRI, Permata</span>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 8px; font-size: 13px;">
+              <span style="font-weight: 600;">Virtual Account (VA)</span>
+              <span style="color: #64748b;">BCA, Mandiri, BNI, BRI, Permata</span>
             </div>
-            <div class="channel-item">
-              <span class="channel-badge">E-Wallet & QRIS</span>
-              <span class="channel-names">GoPay, ShopeePay, QRIS Semua Bank</span>
+            <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 8px; font-size: 13px;">
+              <span style="font-weight: 600;">E-Wallet & QRIS</span>
+              <span style="color: #64748b;">GoPay, ShopeePay, QRIS Semua Bank</span>
             </div>
-            <div class="channel-item">
-              <span class="channel-badge">Kartu Debit/Kredit</span>
-              <span class="channel-names">Visa, Mastercard, JCB (Mode Sandbox)</span>
+            <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 8px; font-size: 13px;">
+              <span style="font-weight: 600;">Kartu Debit/Kredit</span>
+              <span style="color: #64748b;">Visa, Mastercard, JCB (Mode Sandbox)</span>
             </div>
           </div>
         </div>
 
       </section>
 
-      <!-- Kolom Rincian Produk & Keranjang -->
+      <!-- Kolom Kanan: Ringkasan Belanja & Kupon -->
       <aside class="checkout-summary-section">
         <div class="card summary-card">
           <div class="card-header">
-            <span class="step-num">3</span>
+            <span class="step-num">4</span>
             <h2>Ringkasan Pesanan</h2>
           </div>
 
           <!-- Daftar Item Produk -->
           <div class="cart-items" id="cartItemsList">
-            <!-- Rendered by JS -->
+            <!-- Di-render oleh JavaScript -->
           </div>
 
-          <!-- Input kupon voucher -->
+          <!-- Kotak Kupon Promo -->
           <div class="coupon-box">
             <div class="coupon-header">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-              <span>Punya Kupon / Kode Promo?</span>
+              <span>Punya Kupon Promo?</span>
             </div>
             <div class="coupon-input-group">
               <input type="text" id="couponInput" class="coupon-input" placeholder="Contoh: DISKON50" />
@@ -798,11 +830,20 @@
             <div id="couponAlert" class="coupon-alert"></div>
           </div>
 
+          <!-- Rincian Biaya & Ongkir -->
           <div class="pricing-breakdown">
             <div class="price-row">
               <span>Subtotal Produk</span>
               <span id="subtotalAmount">Rp 0</span>
             </div>
+            
+            <!-- Baris Ongkos Kirim Dinamis -->
+            <div class="price-row">
+              <span>Ongkos Kirim (<span id="shippingCourierLabel">GrabExpress</span>)</span>
+              <span id="shippingCostAmount" style="font-weight: 600; color: #0f172a;">Rp 15.000</span>
+            </div>
+
+            <!-- Baris Diskon Kupon -->
             <div class="price-row discount-row" id="discountRow">
               <span>
                 Diskon Kupon (<span id="appliedCouponCode"></span>)
@@ -810,22 +851,25 @@
               </span>
               <span id="discountAmountText">-Rp 0</span>
             </div>
+
             <div class="price-row">
               <span>Biaya Layanan / Admin</span>
               <span id="adminFeeAmount">Rp 1.000</span>
             </div>
+
             <div class="price-row total-row">
               <div>
                 <span class="total-label">Total Pembayaran</span>
-                <span class="total-note">Termasuk PPN & Biaya Transaksi</span>
+                <span style="font-size: 11px; color: #64748b;">Termasuk Produk, Ongkir & Pajak</span>
               </div>
               <span class="total-price" id="grandTotalAmount">Rp 0</span>
             </div>
           </div>
 
+          <!-- Tombol Bayar -->
           <button type="button" class="btn-pay" id="payButton">
             <span class="btn-pay-text">Bayar Sekarang &rarr;</span>
-            <span class="btn-pay-spinner" style="display: none;">Memproses Midtrans...</span>
+            <span class="btn-pay-spinner" style="display: none;">Menghubungkan Midtrans...</span>
           </button>
 
           <p class="security-footer">
@@ -838,6 +882,7 @@
     </div>
   </main>
 
+  <!-- Modal Struk Transaksi -->
   <div class="modal-overlay" id="receiptModal">
     <div class="modal-card">
       <div class="receipt-icon-wrapper" id="receiptIconWrapper"></div>
@@ -851,11 +896,14 @@
   </div>
 
   <script>
+    // Data produk dan opsi pengiriman dari controller Laravel
     const products = @json($products);
+    const shippingOptions = @json($shippingOptions);
     const ADMIN_FEE = {{ $adminFee }};
 
-    // State kupon aktif
+    // State kupon dan pengiriman aktif
     let appliedCoupon = null;
+    let selectedShipping = shippingOptions.length > 0 ? shippingOptions[0] : null;
 
     function formatRupiah(amount) {
       return new Intl.NumberFormat('id-ID', {
@@ -870,6 +918,26 @@
         .filter(p => p.quantity > 0)
         .reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
     }
+
+    // Fungsi memilih kurir pengiriman
+    window.selectShipping = function(shippingId) {
+      const found = shippingOptions.find(s => s.id === shippingId);
+      if (found) {
+        selectedShipping = found;
+
+        // Memperbarui styling card yang aktif
+        document.querySelectorAll('.shipping-option-card').forEach(card => {
+          if (card.getAttribute('data-id') === shippingId) {
+            card.classList.add('selected');
+          } else {
+            card.classList.remove('selected');
+          }
+        });
+
+        // Hitung ulang total belanja dan ongkir
+        renderCart();
+      }
+    };
 
     function renderCart() {
       const cartContainer = document.getElementById('cartItemsList');
@@ -895,7 +963,7 @@
         cartContainer.appendChild(itemEl);
       });
 
-      // Hitung diskon kupon
+      // Menghitung potongan kupon
       let discountAmount = 0;
       if (appliedCoupon && subtotal > 0) {
         if (appliedCoupon.type === 'percent') {
@@ -919,7 +987,15 @@
         discountRow.classList.remove('active');
       }
 
-      const grandTotal = subtotal > 0 ? Math.max(1000, subtotal - discountAmount + ADMIN_FEE) : 0;
+      // Menghitung biaya ongkir yang dipilih
+      const shippingCost = selectedShipping ? selectedShipping.cost : 0;
+      const courierLabel = selectedShipping ? selectedShipping.courier : 'Pilih Kurir';
+
+      document.getElementById('shippingCourierLabel').textContent = courierLabel;
+      document.getElementById('shippingCostAmount').textContent = shippingCost > 0 ? formatRupiah(shippingCost) : 'GRATIS';
+
+      // Total akhir = Subtotal + Admin + Ongkir - Diskon Kupon
+      const grandTotal = subtotal > 0 ? Math.max(1000, subtotal + shippingCost + ADMIN_FEE - discountAmount) : 0;
 
       document.getElementById('subtotalAmount').textContent = formatRupiah(subtotal);
       document.getElementById('adminFeeAmount').textContent = formatRupiah(subtotal > 0 ? ADMIN_FEE : 0);
@@ -947,10 +1023,8 @@
       handleApplyCoupon();
     };
 
-    // Validasi kupon ke server
     async function handleApplyCoupon() {
       const couponInput = document.getElementById('couponInput');
-      const couponAlert = document.getElementById('couponAlert');
       const code = couponInput.value.trim().toUpperCase();
       const subtotal = calculateSubtotal();
 
@@ -1026,7 +1100,6 @@
       const couponInput = document.getElementById('couponInput');
 
       payButton.addEventListener('click', handlePaymentCheckout);
-
       btnApplyCoupon.addEventListener('click', handleApplyCoupon);
       btnRemoveCoupon.addEventListener('click', removeCoupon);
       couponInput.addEventListener('keydown', (e) => {
@@ -1041,13 +1114,15 @@
       });
     });
 
+    // Handler proses checkout dan pembuatan snap token
     async function handlePaymentCheckout() {
       const customerName = document.getElementById('customerName').value.trim();
       const customerEmail = document.getElementById('customerEmail').value.trim();
       const customerPhone = document.getElementById('customerPhone').value.trim();
+      const shippingAddress = document.getElementById('shippingAddress').value.trim();
 
-      if (!customerName || !customerEmail || !customerPhone) {
-        alert('Mohon lengkapi Nama, Email, dan Nomor WhatsApp Anda.');
+      if (!customerName || !customerEmail || !customerPhone || !shippingAddress) {
+        alert('Mohon lengkapi Nama, Email, No. HP, dan Alamat Pengiriman.');
         return;
       }
 
@@ -1058,6 +1133,8 @@
       }
 
       const subtotal = calculateSubtotal();
+      const shippingCost = selectedShipping ? selectedShipping.cost : 0;
+      
       let discountAmount = 0;
       if (appliedCoupon) {
         if (appliedCoupon.type === 'percent') {
@@ -1070,8 +1147,9 @@
         }
       }
 
-      const grandTotal = Math.max(1000, subtotal - discountAmount + ADMIN_FEE);
+      const grandTotal = Math.max(1000, subtotal + shippingCost + ADMIN_FEE - discountAmount);
 
+      // Format rincian produk untuk Midtrans
       const itemDetails = activeItems.map(p => ({
         id: p.id,
         price: p.price,
@@ -1079,6 +1157,7 @@
         name: p.name
       }));
 
+      // Tambahkan biaya admin ke rincian
       itemDetails.push({
         id: 'FEE-ADMIN',
         price: ADMIN_FEE,
@@ -1097,6 +1176,7 @@
       try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        // Mengirimkan request order lengkap dengan pilihan pengiriman ke backend
         const response = await fetch("{{ route('payment.snapToken') }}", {
           method: 'POST',
           headers: {
@@ -1110,6 +1190,10 @@
             customer_name: customerName,
             customer_email: customerEmail,
             customer_phone: customerPhone,
+            shipping_address: shippingAddress,
+            shipping_courier: selectedShipping ? selectedShipping.courier : 'Kurir Standard',
+            shipping_service: selectedShipping ? selectedShipping.service : 'Delivery',
+            shipping_cost: shippingCost,
             coupon_code: appliedCoupon ? appliedCoupon.code : null
           })
         });
@@ -1120,6 +1204,7 @@
           throw new Error(data.message || 'Gagal memproses pembayaran ke server Midtrans.');
         }
 
+        // Membuka popup resmi Midtrans Snap
         window.snap.pay(data.snap_token, {
           onSuccess: function (result) {
             fetch(`{{ url('/orders') }}/${result.order_id}/check`, {
@@ -1129,7 +1214,7 @@
             showReceiptModal({
               status: 'success',
               title: 'Pembayaran Berhasil!',
-              subtitle: 'Terima kasih atas pesanan Anda. Transaksi telah sukses di Midtrans Sandbox.',
+              subtitle: 'Terima kasih atas pesanan Anda. Kopi akan segera disiapkan dan dikirim.',
               orderId: result.order_id,
               paymentType: result.payment_type || 'Midtrans Sandbox',
               amount: grandTotal
@@ -1204,6 +1289,10 @@
         <div class="receipt-row">
           <span>Order ID:</span>
           <span>${orderId}</span>
+        </div>
+        <div class="receipt-row">
+          <span>Kurir:</span>
+          <span>${selectedShipping ? selectedShipping.courier : 'Kurir'}</span>
         </div>
         <div class="receipt-row">
           <span>Metode:</span>

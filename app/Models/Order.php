@@ -11,6 +11,11 @@ class Order extends Model
         'customer_name',
         'customer_email',
         'customer_phone',
+        // Menambahkan atribut pengiriman ke fillable model
+        'shipping_courier',
+        'shipping_service',
+        'shipping_cost',
+        'shipping_address',
         'gross_amount',
         'status',
         'snap_token',
@@ -21,5 +26,7 @@ class Order extends Model
     protected $casts = [
         'payment_response' => 'array',
         'gross_amount'     => 'decimal:2',
+        // Format casting untuk ongkos kirim
+        'shipping_cost'    => 'decimal:2',
     ];
 }

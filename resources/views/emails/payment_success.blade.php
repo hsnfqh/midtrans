@@ -100,34 +100,6 @@
       color: #0f172a;
       text-align: right;
     }
-    .items-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-    .items-table th {
-      text-align: left;
-      padding: 10px 0;
-      border-bottom: 2px solid #e2e8f0;
-      color: #475569;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .items-table td {
-      padding: 14px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .item-name {
-      font-weight: 600;
-      color: #0f172a;
-    }
-    .item-desc {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 2px;
-    }
     .total-section {
       border-top: 2px dashed #cbd5e1;
       padding-top: 16px;
@@ -168,13 +140,11 @@
 <body>
 
   <div class="email-container">
-    <!-- Header -->
     <div class="header">
       <div class="brand-title">☕ Kala Coffee Roastery</div>
       <div class="brand-subtitle">Notifikasi Pembayaran Resmi E-Commerce</div>
     </div>
 
-    <!-- Status Banner -->
     <div class="status-banner">
       <div>
         <span class="status-badge">✓ PEMBAYARAN LUNAS</span>
@@ -182,14 +152,12 @@
       </div>
     </div>
 
-    <!-- Content -->
     <div class="content">
       <p class="greeting">
         Halo <strong>{{ $order->customer_name }}</strong>,<br>
-        Pesanan kopimu sedang kami siapkan untuk diproses dan dikirimkan. Berikut adalah rincian bukti transaksi pembayaranmu:
+        Pesanan kopimu sedang kami siapkan untuk segera diproses dan dikirimkan oleh kurir. Berikut rincian bukti transaksi pembayaranmu:
       </p>
 
-      <!-- Order Summary Card -->
       <div class="order-box">
         <table class="order-grid">
           <tr>
@@ -204,6 +172,25 @@
             <td class="label">Metode Pembayaran</td>
             <td class="val">{{ strtoupper($order->payment_type ?? 'MIDTRANS PAYMENT') }}</td>
           </tr>
+          
+          <!-- Rincian kurir & ongkir pada struk email -->
+          @if($order->shipping_courier)
+            <tr>
+              <td class="label">Kurir Pengiriman</td>
+              <td class="val">{{ $order->shipping_courier }} ({{ $order->shipping_service }})</td>
+            </tr>
+            <tr>
+              <td class="label">Ongkos Kirim</td>
+              <td class="val">{{ $order->shipping_cost > 0 ? 'Rp ' . number_format($order->shipping_cost, 0, ',', '.') : 'GRATIS' }}</td>
+            </tr>
+            @if($order->shipping_address)
+              <tr>
+                <td class="label">Alamat Pengiriman</td>
+                <td class="val">{{ $order->shipping_address }}</td>
+              </tr>
+            @endif
+          @endif
+
           <tr>
             <td class="label">Email Pelanggan</td>
             <td class="val">{{ $order->customer_email }}</td>
@@ -215,7 +202,6 @@
         </table>
       </div>
 
-      <!-- Total Bayar -->
       <div class="total-section">
         <div class="total-row">
           <span>Total Pembayaran</span>
@@ -224,11 +210,10 @@
       </div>
 
       <div class="action-btn-group">
-        <a href="{{ route('payment.history') }}" class="btn-home">← Kembali ke Riwayat Pesanan</a>
+        <a href="{{ route('payment.history') }}" class="btn-home">&larr; Kembali ke Riwayat Pesanan</a>
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
       <p style="margin: 0 0 6px 0;"><strong>Kala Coffee Roastery Indonesia</strong></p>
       <p style="margin: 0;">Email ini dibuat secara otomatis oleh sistem simulasi e-commerce Laravel & Midtrans.</p>

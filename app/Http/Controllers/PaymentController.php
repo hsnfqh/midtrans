@@ -38,14 +38,50 @@ class PaymentController extends Controller
             ]
         ];
 
+        // Daftar opsi pengiriman kurir yang tersedia di toko
+        $shippingOptions = [
+            [
+                'id'          => 'grab_instant',
+                'courier'     => 'GrabFood / GrabExpress',
+                'service'     => 'Instant Delivery (1-2 Jam)',
+                'cost'        => 15000,
+                'badge'       => 'Paling Cepat',
+                'icon'        => '⚡'
+            ],
+            [
+                'id'          => 'gosend_sameday',
+                'courier'     => 'GoSend / Gojek',
+                'service'     => 'SameDay Delivery (4-6 Jam)',
+                'cost'        => 10000,
+                'badge'       => 'Hemat',
+                'icon'        => '🛵'
+            ],
+            [
+                'id'          => 'jne_reg',
+                'courier'     => 'JNE Express',
+                'service'     => 'Reguler Luar Kota (1-2 Hari)',
+                'cost'        => 12000,
+                'badge'       => 'Ekspedisi',
+                'icon'        => '📦'
+            ],
+            [
+                'id'          => 'pickup',
+                'courier'     => 'Ambil Sendiri di Outlet',
+                'service'     => 'Pick Up langsung di Kala Coffee Roastery',
+                'cost'        => 0,
+                'badge'       => 'Gratis',
+                'icon'        => '☕'
+            ]
+        ];
+
         $adminFee = 1000;
         $clientKey = config('midtrans.client_key');
         $isProduction = config('midtrans.is_production');
 
-        return view('checkout', compact('products', 'adminFee', 'clientKey', 'isProduction'));
+        // Mengirimkan data produk dan opsi ongkos kirim ke view checkout
+        return view('checkout', compact('products', 'shippingOptions', 'adminFee', 'clientKey', 'isProduction'));
     }
 
-    // Daftar kupon promo toko
     protected function getCoupons()
     {
         return [
@@ -80,7 +116,6 @@ class PaymentController extends Controller
         ];
     }
 
-    // Cek validitas kupon via AJAX
     public function checkCoupon(Request $request)
     {
         $request->validate([
@@ -131,13 +166,17 @@ class PaymentController extends Controller
 
     public function createSnapToken(Request $request)
     {
+        // Validasi input data pembeli dan pilihan pengiriman
         $request->validate([
-            'customer_name'  => 'required|string|max:100',
-            'customer_email' => 'required|email',
-            'customer_phone' => 'required|string|max:20',
-            'items'          => 'required|array|min:1',
-            'gross_amount'   => 'required|numeric|min:1000',
-            'coupon_code'    => 'nullable|string|max:50',
+            'customer_name'    => 'required|string|max:100',
+            'customer_email'   => 'required|email',
+            'customer_phone'   => 'required|string|max:20',
+            'shipping_courier' => 'required|string|max:100',
+            'shipping_service' => 'required|string|max:100',
+            'shipping_cost'    => 'required|numeric|min:0',
+            'shipping_address' => 'required|string|max:500',
+            'items'            => 'required|array|min:1',
+            'coupon_code'      => 'nullable|string|max:50',
         ]);
 
         $this->initMidtrans();
@@ -159,7 +198,18 @@ class PaymentController extends Controller
             ];
         }
 
-        // Hitung potongan diskon kupon
+        // Menambahkan biaya ongkos kirim ke rincian item Midtrans
+        $shippingCost = (int) round($request->shipping_cost);
+        if ($shippingCost > 0) {
+            $itemDetails[] = [
+                'id'       => 'ONGKIR-' . strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $request->shipping_courier), 0, 8)),
+                'price'    => $shippingCost,
+                'quantity' => 1,
+                'name'     => 'Ongkir: ' . substr($request->shipping_courier . ' (' . $request->shipping_service . ')', 0, 45),
+            ];
+        }
+
+        // Menghitung potongan diskon kupon jika digunakan
         $discountAmount = 0;
         $couponCode = strtoupper(trim($request->coupon_code ?? ''));
         $coupons = $this->getCoupons();
@@ -187,15 +237,21 @@ class PaymentController extends Controller
             }
         }
 
-        $grossAmount = max(1000, (int) round($subtotal - $discountAmount));
+        // Total akhir yang harus dibayarkan
+        $grossAmount = max(1000, (int) round($subtotal + $shippingCost - $discountAmount));
 
+        // Menyimpan data pesanan lengkap beserta info kurir & ongkir ke database
         $order = Order::create([
-            'order_id'       => $orderId,
-            'customer_name'  => $request->customer_name,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
-            'gross_amount'   => $grossAmount,
-            'status'         => 'pending',
+            'order_id'         => $orderId,
+            'customer_name'    => $request->customer_name,
+            'customer_email'   => $request->customer_email,
+            'customer_phone'   => $request->customer_phone,
+            'shipping_courier' => $request->shipping_courier,
+            'shipping_service' => $request->shipping_service,
+            'shipping_cost'    => $shippingCost,
+            'shipping_address' => $request->shipping_address,
+            'gross_amount'     => $grossAmount,
+            'status'           => 'pending',
         ]);
 
         $params = [
@@ -208,6 +264,11 @@ class PaymentController extends Controller
                 'first_name' => $request->customer_name,
                 'email'      => $request->customer_email,
                 'phone'      => $request->customer_phone,
+                // Mengirimkan alamat pengiriman ke Midtrans
+                'shipping_address' => [
+                    'first_name' => $request->customer_name,
+                    'address'    => $request->shipping_address,
+                ]
             ],
             'enabled_payments' => [
                 'credit_card', 'bca_va', 'bni_va', 'bri_va', 'permata_va',
@@ -223,12 +284,14 @@ class PaymentController extends Controller
             ]);
 
             return response()->json([
-                'status'          => 'success',
-                'snap_token'      => $snapToken,
-                'order_id'        => $orderId,
-                'amount'          => $grossAmount,
-                'discount_amount' => $discountAmount,
-                'coupon_code'     => $couponCode
+                'status'           => 'success',
+                'snap_token'       => $snapToken,
+                'order_id'         => $orderId,
+                'amount'           => $grossAmount,
+                'shipping_cost'    => $shippingCost,
+                'shipping_courier' => $request->shipping_courier,
+                'discount_amount'  => $discountAmount,
+                'coupon_code'      => $couponCode
             ]);
         } catch (\Exception $e) {
             $order->update(['status' => 'failed']);
