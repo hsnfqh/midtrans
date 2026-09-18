@@ -116,7 +116,6 @@
           <tbody>
             @forelse($orders as $index => $order)
               @php
-                // Format nomor HP ke standar WhatsApp internasional
                 $cleanPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
                 if (str_starts_with($cleanPhone, '0')) {
                     $cleanPhone = '62' . substr($cleanPhone, 1);
@@ -124,12 +123,19 @@
 
                 $nominalRp = number_format($order->gross_amount, 0, ',', '.');
                 $shippingInfo = $order->shipping_courier ? "🚚 *Kurir:* {$order->shipping_courier} ({$order->shipping_service})\n" : "";
+
+                // [KODE BARU] Menyiapkan teks alamat lengkap dan catatan pesanan untuk pesan WhatsApp
+                $fullAddressText = $order->shipping_address . ($order->shipping_city ? ", {$order->shipping_city}" : "") . ($order->shipping_postal_code ? " {$order->shipping_postal_code}" : "");
+                $addressInfo = $order->shipping_address ? "📍 *Alamat:* {$fullAddressText}\n" : "";
+                $notesInfo = $order->order_notes ? "📝 *Catatan:* {$order->order_notes}\n" : "";
                 
                 $waMessage = "Halo Kak {$order->customer_name}! ☕\n\n"
                            . "Terima kasih banyak telah berbelanja di *Kala Coffee Roastery*.\n\n"
                            . "Berikut bukti konfirmasi pembayaranmu:\n"
                            . "📌 *Order ID:* {$order->order_id}\n"
                            . $shippingInfo
+                           . $addressInfo
+                           . $notesInfo
                            . "💰 *Total Bayar:* Rp {$nominalRp}\n"
                            . "💳 *Metode Bayar:* " . strtoupper($order->payment_type ?? 'Midtrans') . "\n"
                            . "✅ *Status:* SUDAH LUNAS (PAID)\n\n"
@@ -145,7 +151,7 @@
                   <small style="color: #334155; font-family: monospace;">{{ $order->customer_phone }}</small>
                 </td>
                 
-                <!-- Menampilkan info kurir, ongkir, dan alamat tujuan -->
+                <!-- [KODE BARU] Menampilkan info kurir, ongkir, alamat lengkap (kota & kode pos), serta catatan pesanan -->
                 <td>
                   @if($order->shipping_courier)
                     <div style="font-weight: 700; color: #0f172a;">{{ $order->shipping_courier }}</div>
@@ -153,8 +159,16 @@
                       {{ $order->shipping_cost > 0 ? 'Rp ' . number_format($order->shipping_cost, 0, ',', '.') : 'Gratis Ongkir' }}
                     </div>
                     @if($order->shipping_address)
-                      <div style="font-size: 11px; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $order->shipping_address }}">
+                      <div style="font-size: 11px; color: #475569; margin-top: 4px;" title="{{ $fullAddressText }}">
                         📍 {{ $order->shipping_address }}
+                        @if($order->shipping_city)
+                          <br><span style="color: #64748b;">Kota: {{ $order->shipping_city }} {{ $order->shipping_postal_code }}</span>
+                        @endif
+                      </div>
+                    @endif
+                    @if($order->order_notes)
+                      <div style="font-size: 11px; color: #0f766e; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 3px 6px; border-radius: 4px; margin-top: 5px; line-height: 1.3;">
+                        📝 <strong>Catatan:</strong> {{ $order->order_notes }}
                       </div>
                     @endif
                   @else

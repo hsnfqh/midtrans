@@ -186,9 +186,22 @@
             @if($order->shipping_address)
               <tr>
                 <td class="label">Alamat Pengiriman</td>
-                <td class="val">{{ $order->shipping_address }}</td>
+                <td class="val">
+                  {{ $order->shipping_address }}
+                  @if($order->shipping_city)
+                    <br><span style="color: #64748b; font-size: 12px;">{{ $order->shipping_city }} {{ $order->shipping_postal_code }}</span>
+                  @endif
+                </td>
               </tr>
             @endif
+          @endif
+
+          <!-- [KODE BARU] Menampilkan catatan pesanan pada struk email jika ada -->
+          @if($order->order_notes)
+            <tr>
+              <td class="label">Catatan Pesanan</td>
+              <td class="val" style="color: #0f766e; font-style: italic;">"{{ $order->order_notes }}"</td>
+            </tr>
           @endif
 
           <tr>

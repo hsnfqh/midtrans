@@ -447,6 +447,38 @@
       cursor: pointer;
     }
 
+    /* [KODE BARU] Styling untuk Pilihan Cepat Catatan & Permintaan Khusus */
+    .notes-quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .note-chip {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      background: #f8fafc;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .note-chip:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .note-chip.active {
+      background: #0f766e;
+      color: #ffffff;
+      border-color: #0f766e;
+    }
+
     .coupon-alert {
       font-size: 11px;
       margin-top: 8px;
@@ -727,17 +759,29 @@
           </form>
         </div>
 
-        <!-- Step 2: Alamat & Pilihan Ongkos Kirim Kurir -->
+        <!-- Step 2: Alamat Pengiriman & Pilihan Kurir -->
         <div class="card">
           <div class="card-header">
             <span class="step-num">2</span>
-            <h2>Pengiriman & Pilihan Kurir</h2>
+            <h2>Alamat Pengiriman & Pilihan Kurir</h2>
           </div>
-          <p class="section-desc">Pilih layanan pengiriman yang sesuai untuk pesanan kopi Anda.</p>
+          <p class="section-desc">Lengkapi alamat tujuan pengiriman dan pilih kurir yang diinginkan.</p>
 
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label for="shippingAddress">Alamat Pengiriman Lengkap</label>
-            <textarea id="shippingAddress" class="form-control" rows="2" placeholder="Masukkan jalan, no. rumah/kantor, RT/RW, dan patokan..." required>Jl. Merdeka No. 45, Jakarta Selatan (Samping Coffee Lab)</textarea>
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="shippingAddress">Alamat Jalan & Patokan Lokasi</label>
+            <textarea id="shippingAddress" class="form-control" rows="2" placeholder="Masukkan nama jalan, nomor rumah, RT/RW, patokan..." required>Jl. Merdeka No. 45 (Samping Coffee Lab)</textarea>
+          </div>
+
+          <!-- [KODE BARU] Input Kota/Kabupaten dan Kode Pos untuk melengkapi alamat pengiriman -->
+          <div class="form-row" style="margin-bottom: 18px;">
+            <div class="form-group">
+              <label for="shippingCity">Kota / Kabupaten</label>
+              <input type="text" id="shippingCity" class="form-control" placeholder="Contoh: Jakarta Selatan" value="Jakarta Selatan" required>
+            </div>
+            <div class="form-group">
+              <label for="shippingPostalCode">Kode Pos</label>
+              <input type="text" id="shippingPostalCode" class="form-control" placeholder="Contoh: 12190" value="12190">
+            </div>
           </div>
 
           <label style="font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 8px;">
@@ -773,10 +817,33 @@
           </div>
         </div>
 
-        <!-- Step 3: Metode Pembayaran Tersedia di Midtrans -->
+        <!-- [KODE BARU] Step 3: Catatan & Pesan Khusus untuk Pesanan -->
         <div class="card">
           <div class="card-header">
             <span class="step-num">3</span>
+            <h2>Catatan & Permintaan Khusus Pesanan</h2>
+          </div>
+          <p class="section-desc">Tambahkan permintaan gilingan kopi, tingkat manis, atau pesan ke kurir.</p>
+
+          <!-- Pilihan Cepat Kategori Gilingan & Pesan -->
+          <div class="notes-quick-tags">
+            <span class="note-chip" onclick="addQuickNote('Biji Kopi Utuh (Whole Bean)')">☕ Biji Utuh</span>
+            <span class="note-chip" onclick="addQuickNote('Giling Halus (Espresso/Mokapot)')">✨ Giling Halus</span>
+            <span class="note-chip" onclick="addQuickNote('Giling Medium (V60/Filter)')">☕ Giling Medium</span>
+            <span class="note-chip" onclick="addQuickNote('Giling Kasar (Cold Brew)')">🧊 Giling Kasar</span>
+            <span class="note-chip" onclick="addQuickNote('Titip di pos satpam')">🚪 Titip Satpam</span>
+          </div>
+
+          <div class="form-group">
+            <label for="orderNotes">Pesan / Catatan Tambahan (Opsional)</label>
+            <textarea id="orderNotes" class="form-control" rows="2" placeholder="Contoh: Tolong digiling medium untuk seduh V60, terima kasih!"></textarea>
+          </div>
+        </div>
+
+        <!-- Step 4: Metode Pembayaran Tersedia di Midtrans -->
+        <div class="card">
+          <div class="card-header">
+            <span class="step-num">4</span>
             <h2>Metode Pembayaran Didukung</h2>
           </div>
           <p class="section-desc">Pilihan metode bayar aktif secara otomatis pada popup Midtrans Snap:</p>
@@ -803,7 +870,7 @@
       <aside class="checkout-summary-section">
         <div class="card summary-card">
           <div class="card-header">
-            <span class="step-num">4</span>
+            <span class="step-num">5</span>
             <h2>Ringkasan Pesanan</h2>
           </div>
 
@@ -1114,15 +1181,34 @@
       });
     });
 
+    // [KODE BARU] Fungsi memilih / menambahkan opsi cepat catatan gilingan & pesan ke textarea
+    window.addQuickNote = function(text) {
+      const orderNotesInput = document.getElementById('orderNotes');
+      if (!orderNotesInput) return;
+
+      if (orderNotesInput.value.trim() === '') {
+        orderNotesInput.value = text;
+      } else {
+        if (!orderNotesInput.value.includes(text)) {
+          orderNotesInput.value += ', ' + text;
+        }
+      }
+      orderNotesInput.focus();
+    };
+
     // Handler proses checkout dan pembuatan snap token
     async function handlePaymentCheckout() {
       const customerName = document.getElementById('customerName').value.trim();
       const customerEmail = document.getElementById('customerEmail').value.trim();
       const customerPhone = document.getElementById('customerPhone').value.trim();
       const shippingAddress = document.getElementById('shippingAddress').value.trim();
+      // [KODE BARU] Mengambil input detail kota, kode pos, dan catatan pesanan
+      const shippingCity = document.getElementById('shippingCity').value.trim();
+      const shippingPostalCode = document.getElementById('shippingPostalCode').value.trim();
+      const orderNotes = document.getElementById('orderNotes').value.trim();
 
-      if (!customerName || !customerEmail || !customerPhone || !shippingAddress) {
-        alert('Mohon lengkapi Nama, Email, No. HP, dan Alamat Pengiriman.');
+      if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !shippingCity) {
+        alert('Mohon lengkapi Nama, Email, No. HP, Alamat Jalan, dan Kota Pengiriman.');
         return;
       }
 
@@ -1149,7 +1235,6 @@
 
       const grandTotal = Math.max(1000, subtotal + shippingCost + ADMIN_FEE - discountAmount);
 
-      // Format rincian produk untuk Midtrans
       const itemDetails = activeItems.map(p => ({
         id: p.id,
         price: p.price,
@@ -1157,7 +1242,6 @@
         name: p.name
       }));
 
-      // Tambahkan biaya admin ke rincian
       itemDetails.push({
         id: 'FEE-ADMIN',
         price: ADMIN_FEE,
@@ -1176,7 +1260,7 @@
       try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Mengirimkan request order lengkap dengan pilihan pengiriman ke backend
+        // [KODE BARU] Mengirim request pembuatan Snap Token lengkap dengan alamat detail dan catatan
         const response = await fetch("{{ route('payment.snapToken') }}", {
           method: 'POST',
           headers: {
@@ -1191,6 +1275,9 @@
             customer_email: customerEmail,
             customer_phone: customerPhone,
             shipping_address: shippingAddress,
+            shipping_city: shippingCity,
+            shipping_postal_code: shippingPostalCode,
+            order_notes: orderNotes,
             shipping_courier: selectedShipping ? selectedShipping.courier : 'Kurir Standard',
             shipping_service: selectedShipping ? selectedShipping.service : 'Delivery',
             shipping_cost: shippingCost,
@@ -1204,7 +1291,6 @@
           throw new Error(data.message || 'Gagal memproses pembayaran ke server Midtrans.');
         }
 
-        // Membuka popup resmi Midtrans Snap
         window.snap.pay(data.snap_token, {
           onSuccess: function (result) {
             fetch(`{{ url('/orders') }}/${result.order_id}/check`, {
@@ -1217,6 +1303,8 @@
               subtitle: 'Terima kasih atas pesanan Anda. Kopi akan segera disiapkan dan dikirim.',
               orderId: result.order_id,
               paymentType: result.payment_type || 'Midtrans Sandbox',
+              notes: orderNotes,
+              destination: `${shippingCity} (${shippingPostalCode || '-'})`,
               amount: grandTotal
             });
             resetPayButton();
@@ -1236,6 +1324,8 @@
               orderId: result.order_id,
               paymentType: result.payment_type || 'Virtual Account / QRIS',
               extra: extraInfo,
+              notes: orderNotes,
+              destination: `${shippingCity} (${shippingPostalCode || '-'})`,
               amount: grandTotal
             });
             resetPayButton();
@@ -1264,7 +1354,7 @@
       }
     }
 
-    function showReceiptModal({ status, title, subtitle, orderId, paymentType, extra, amount }) {
+    function showReceiptModal({ status, title, subtitle, orderId, paymentType, extra, notes, destination, amount }) {
       const receiptModal = document.getElementById('receiptModal');
       const iconWrapper = document.getElementById('receiptIconWrapper');
       const titleEl = document.getElementById('receiptTitle');
@@ -1291,6 +1381,10 @@
           <span>${orderId}</span>
         </div>
         <div class="receipt-row">
+          <span>Tujuan:</span>
+          <span>${destination || '-'}</span>
+        </div>
+        <div class="receipt-row">
           <span>Kurir:</span>
           <span>${selectedShipping ? selectedShipping.courier : 'Kurir'}</span>
         </div>
@@ -1298,9 +1392,21 @@
           <span>Metode:</span>
           <span>${paymentType}</span>
         </div>
-        <div class="receipt-row">
-          <span>Total Bayar:</span>
-          <span>${formatRupiah(amount)}</span>
+      `;
+
+      if (notes) {
+        html += `
+          <div class="receipt-row">
+            <span>Catatan:</span>
+            <span style="font-style: italic; color: #0f766e;">"${notes}"</span>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="receipt-row" style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
+          <span style="font-weight: 700; color: #0f172a;">Total Bayar:</span>
+          <span style="font-weight: 800; color: #0f766e;">${formatRupiah(amount)}</span>
         </div>
       `;
 

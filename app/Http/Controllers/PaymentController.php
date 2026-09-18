@@ -166,17 +166,20 @@ class PaymentController extends Controller
 
     public function createSnapToken(Request $request)
     {
-        // Validasi input data pembeli dan pilihan pengiriman
         $request->validate([
-            'customer_name'    => 'required|string|max:100',
-            'customer_email'   => 'required|email',
-            'customer_phone'   => 'required|string|max:20',
-            'shipping_courier' => 'required|string|max:100',
-            'shipping_service' => 'required|string|max:100',
-            'shipping_cost'    => 'required|numeric|min:0',
-            'shipping_address' => 'required|string|max:500',
-            'items'            => 'required|array|min:1',
-            'coupon_code'      => 'nullable|string|max:50',
+            'customer_name'        => 'required|string|max:100',
+            'customer_email'       => 'required|email',
+            'customer_phone'       => 'required|string|max:20',
+            'shipping_courier'     => 'required|string|max:100',
+            'shipping_service'     => 'required|string|max:100',
+            'shipping_cost'        => 'required|numeric|min:0',
+            'shipping_address'     => 'required|string|max:500',
+            // [KODE BARU] Validasi input kota, kode pos, dan catatan pesanan
+            'shipping_city'        => 'required|string|max:100',
+            'shipping_postal_code' => 'nullable|string|max:10',
+            'order_notes'          => 'nullable|string|max:500',
+            'items'                => 'required|array|min:1',
+            'coupon_code'          => 'nullable|string|max:50',
         ]);
 
         $this->initMidtrans();
@@ -198,7 +201,6 @@ class PaymentController extends Controller
             ];
         }
 
-        // Menambahkan biaya ongkos kirim ke rincian item Midtrans
         $shippingCost = (int) round($request->shipping_cost);
         if ($shippingCost > 0) {
             $itemDetails[] = [
@@ -209,7 +211,6 @@ class PaymentController extends Controller
             ];
         }
 
-        // Menghitung potongan diskon kupon jika digunakan
         $discountAmount = 0;
         $couponCode = strtoupper(trim($request->coupon_code ?? ''));
         $coupons = $this->getCoupons();
@@ -237,21 +238,23 @@ class PaymentController extends Controller
             }
         }
 
-        // Total akhir yang harus dibayarkan
         $grossAmount = max(1000, (int) round($subtotal + $shippingCost - $discountAmount));
 
-        // Menyimpan data pesanan lengkap beserta info kurir & ongkir ke database
+        // [KODE BARU] Menyimpan data pesanan lengkap beserta detail alamat & catatan pesanan
         $order = Order::create([
-            'order_id'         => $orderId,
-            'customer_name'    => $request->customer_name,
-            'customer_email'   => $request->customer_email,
-            'customer_phone'   => $request->customer_phone,
-            'shipping_courier' => $request->shipping_courier,
-            'shipping_service' => $request->shipping_service,
-            'shipping_cost'    => $shippingCost,
-            'shipping_address' => $request->shipping_address,
-            'gross_amount'     => $grossAmount,
-            'status'           => 'pending',
+            'order_id'             => $orderId,
+            'customer_name'        => $request->customer_name,
+            'customer_email'       => $request->customer_email,
+            'customer_phone'       => $request->customer_phone,
+            'shipping_courier'     => $request->shipping_courier,
+            'shipping_service'     => $request->shipping_service,
+            'shipping_cost'        => $shippingCost,
+            'shipping_address'     => $request->shipping_address,
+            'shipping_city'        => $request->shipping_city,
+            'shipping_postal_code' => $request->shipping_postal_code,
+            'order_notes'          => $request->order_notes,
+            'gross_amount'         => $grossAmount,
+            'status'               => 'pending',
         ]);
 
         $params = [
@@ -264,10 +267,13 @@ class PaymentController extends Controller
                 'first_name' => $request->customer_name,
                 'email'      => $request->customer_email,
                 'phone'      => $request->customer_phone,
-                // Mengirimkan alamat pengiriman ke Midtrans
+                // [KODE BARU] Mengirim data alamat pengiriman terstruktur (Jalan, Kota, Kode Pos) ke Midtrans
                 'shipping_address' => [
-                    'first_name' => $request->customer_name,
-                    'address'    => $request->shipping_address,
+                    'first_name'   => $request->customer_name,
+                    'address'      => $request->shipping_address,
+                    'city'         => $request->shipping_city,
+                    'postal_code'  => $request->shipping_postal_code ?? '',
+                    'country_code' => 'IDN',
                 ]
             ],
             'enabled_payments' => [
