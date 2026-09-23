@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -19,26 +20,31 @@ class PaymentController extends Controller
         MidtransConfig::$is3ds = config('midtrans.is_3ds');
     }
 
-    public function index()
+    // Katalog produk resmi toko yang digunakan untuk checkout dan pengetahuan AI Barista
+    protected function getProducts()
     {
-        $products = [
+        return [
             [
                 'id'       => 'PROD-01',
                 'name'     => 'Kala Flores Bajawa Single Origin 250g',
                 'price'    => 85000,
                 'quantity' => 1,
-                'desc'     => 'Arabika Flores Bajawa, Notes: Caramel, Nutty'
+                'desc'     => 'Arabika Flores Bajawa dengan notes caramel, chocolate, nutty, dan low acidity (sangat aman untuk lambung).'
             ],
             [
                 'id'       => 'PROD-02',
                 'name'     => 'Cold Brew Concentrate 500ml',
                 'price'    => 65000,
                 'quantity' => 1,
-                'desc'     => 'House blend extract, rasio 1:2 siap seduh'
+                'desc'     => 'House blend extract kopi pekat, rasio 1:2 siap seduh, segar, praktis, dan tahan 2 minggu di kulkas.'
             ]
         ];
+    }
 
-        // Daftar opsi pengiriman kurir yang tersedia di toko
+    public function index()
+    {
+        $products = $this->getProducts();
+
         $shippingOptions = [
             [
                 'id'          => 'grab_instant',
@@ -78,7 +84,6 @@ class PaymentController extends Controller
         $clientKey = config('midtrans.client_key');
         $isProduction = config('midtrans.is_production');
 
-        // Mengirimkan data produk dan opsi ongkos kirim ke view checkout
         return view('checkout', compact('products', 'shippingOptions', 'adminFee', 'clientKey', 'isProduction'));
     }
 
@@ -174,7 +179,6 @@ class PaymentController extends Controller
             'shipping_service'     => 'required|string|max:100',
             'shipping_cost'        => 'required|numeric|min:0',
             'shipping_address'     => 'required|string|max:500',
-            // [KODE BARU] Validasi input kota, kode pos, dan catatan pesanan
             'shipping_city'        => 'required|string|max:100',
             'shipping_postal_code' => 'nullable|string|max:10',
             'order_notes'          => 'nullable|string|max:500',
@@ -240,7 +244,6 @@ class PaymentController extends Controller
 
         $grossAmount = max(1000, (int) round($subtotal + $shippingCost - $discountAmount));
 
-        // [KODE BARU] Menyimpan data pesanan lengkap beserta detail alamat & catatan pesanan
         $order = Order::create([
             'order_id'             => $orderId,
             'customer_name'        => $request->customer_name,
@@ -267,7 +270,6 @@ class PaymentController extends Controller
                 'first_name' => $request->customer_name,
                 'email'      => $request->customer_email,
                 'phone'      => $request->customer_phone,
-                // [KODE BARU] Mengirim data alamat pengiriman terstruktur (Jalan, Kota, Kode Pos) ke Midtrans
                 'shipping_address' => [
                     'first_name'   => $request->customer_name,
                     'address'      => $request->shipping_address,
@@ -444,5 +446,110 @@ class PaymentController extends Controller
     {
         $order = Order::where('order_id', $orderId)->firstOrFail();
         return view('emails.payment_success', compact('order'));
+    }
+
+    /**
+     * [FITUR AI] Endpoint Barista AI Chatbot Rekomendasi Produk
+     * Memanfaatkan Google Gemini API untuk memberikan konsultasi pemilihan kopi & kupon
+     */
+    public function chatRecommend(Request $request)
+    {
+        // 1. Validasi input pesan dari user
+        $request->validate([
+            'message' => 'required|string|max:1000'
+        ]);
+
+        $userMessage = trim($request->input('message'));
+        $geminiApiKey = env('GEMINI_API_KEY');
+
+        // 2. Siapkan data produk dan promo toko sebagai Knowledge Base AI
+        $products = $this->getProducts();
+        $coupons = $this->getCoupons();
+
+        $productKnowledge = "";
+        foreach ($products as $p) {
+            $formattedPrice = number_format($p['price'], 0, ',', '.');
+            $productKnowledge .= "- {$p['name']} (Harga: Rp {$formattedPrice}): {$p['desc']}\n";
+        }
+
+        $couponKnowledge = "";
+        foreach ($coupons as $code => $c) {
+            $couponKnowledge .= "- Kode Kupon: {$code} ({$c['desc']})\n";
+        }
+
+        // 3. Susun System Prompt / Instruksi Karakter untuk Barista AI
+        $systemPrompt = "Kamu adalah 'Kala Barista AI', asisten virtual cerdas, ramah, dan bersahabat dari kedai kopi artisan 'Kala Coffee Roastery'.
+Tugasmu adalah merekomendasikan produk kopi dan promo yang paling cocok untuk pelanggan berdasarkan pertanyaan mereka.
+
+Berikut adalah DAFTAR MENU PRODUK RESMI KAMI:
+{$productKnowledge}
+DAFTAR KODE KUPON PROMO AKTIF:
+{$couponKnowledge}
+
+PANDUAN MENJAWAB:
+1. Bersikap ramah, sopan, antusias, dan gunakan sapaan santun (seperti 'Kak', 'Halo Kak!').
+2. HANYA rekomendasikan produk kopi dan kupon yang ada pada daftar resmi di atas.
+3. Berikan alasan kenapa kopi tersebut cocok sesuai pertanyaan pelanggan (misal: rasa, keasaman/acidity, aroma, atau kepraktisan).
+4. Gunakan bahasa Indonesia yang santai, jelas, dan rapi (boleh gunakan formatting markdown bold/bullet points sederhana).
+5. Jawaban jangan terlalu panjang, buat to-the-point, informatif, dan menarik.";
+
+        // Jika API Key belum diisi di .env, sediakan jawaban fallback cerdas agar simulasi di kelas tetap berjalan lancar
+        if (empty($geminiApiKey)) {
+            $lower = strtolower($userMessage);
+            if (str_contains($lower, 'asam') || str_contains($lower, 'lambung') || str_contains($lower, 'pemula')) {
+                $mockReply = "Halo Kak! 😊 Untuk yang tidak terlalu asam dan ramah di lambung, saya sangat menyarankan **Kala Flores Bajawa Single Origin 250g** (Rp 85.000). Karakter rasanya dominan *caramel, chocolate, & nutty* dengan *low acidity*, jadi sangat nyaman dinikmati!";
+            } elseif (str_contains($lower, 'praktis') || str_contains($lower, 'cepat') || str_contains($lower, 'cold') || str_contains($lower, 'es')) {
+                $mockReply = "Halo Kak! Kalau cari yang praktis dan menyegarkan, **Cold Brew Concentrate 500ml** (Rp 65.000) adalah pilihan terbaik! Tinggal tuang dengan rasio 1:2 (tambahkan susu/air/es batu), siap dinikmati dan tahan hingga 2 minggu di kulkas.";
+            } elseif (str_contains($lower, 'promo') || str_contains($lower, 'diskon') || str_contains($lower, 'kupon') || str_contains($lower, 'hemat')) {
+                $mockReply = "Kabar gembira Kak! 🎉 Hari ini ada kupon **DISKON50** (Diskon 50% maks. 75rb), **HEMAT10K** (Potongan Rp 10.000), atau **BELAJARCODING** (Potongan Rp 50.000). Silakan pasang kodenya di form kupon saat checkout ya!";
+            } else {
+                $mockReply = "Halo Kak! Selamat datang di Kala Coffee. Kami memiliki **Kala Flores Bajawa** (notes caramel & cokelat yang ramah lambung) dan **Cold Brew Concentrate 500ml** yang praktis & segar. Kakak lebih suka sensasi rasa kopi hangat yang manis-gurih atau es kopi siap seduh?";
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'reply'  => $mockReply,
+                'source' => 'fallback_mode'
+            ]);
+        }
+
+        // 4. Panggil Google Gemini API
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->timeout(15)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$geminiApiKey}", [
+                'contents' => [
+                    [
+                        'role' => 'user',
+                        'parts' => [
+                            ['text' => $systemPrompt . "\n\nPertanyaan Pelanggan:\n" . $userMessage]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'temperature'     => 0.7,
+                    'maxOutputTokens' => 600,
+                ]
+            ]);
+
+            if ($response->successful()) {
+                $aiReply = $response->json('candidates.0.content.parts.0.text');
+                return response()->json([
+                    'status' => 'success',
+                    'reply'  => $aiReply ?? 'Maaf Kak, Barista AI sedang sibuk meracik kopi. Silakan coba tanyakan lagi ya!'
+                ]);
+            } else {
+                $errMsg = $response->json('error.message') ?? 'Gagal terhubung ke Gemini API';
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Gemini API Error: ' . $errMsg
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Koneksi AI gagal: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

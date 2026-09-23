@@ -697,6 +697,281 @@
       border-radius: var(--radius-md);
       cursor: pointer;
     }
+
+    /* =========================================
+       [FITUR AI] STYLING AI BARISTA CHATBOT WIDGET
+       ========================================= */
+    .ai-chat-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 990;
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px -5px rgba(15, 118, 110, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ai-chat-fab:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 28px -5px rgba(15, 118, 110, 0.5);
+    }
+
+    .ai-fab-badge {
+      background: #2dd4bf;
+      color: #042f2e;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Modal / Floating Window Chatbot */
+    .ai-chat-window {
+      position: fixed;
+      bottom: 84px;
+      right: 24px;
+      width: 380px;
+      max-width: calc(100vw - 32px);
+      height: 520px;
+      max-height: calc(100vh - 110px);
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      z-index: 991;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ai-chat-window.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    .ai-chat-header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ai-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ai-avatar {
+      width: 36px;
+      height: 36px;
+      background: #0f766e;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.4);
+    }
+
+    .ai-title-wrap h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ai-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #2dd4bf;
+      display: inline-block;
+      box-shadow: 0 0 6px #2dd4bf;
+    }
+
+    .ai-title-wrap p {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .ai-close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+
+    .ai-close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .ai-chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f8fafc;
+    }
+
+    .ai-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .ai-msg.bot {
+      align-self: flex-start;
+      background: #ffffff;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .ai-msg.user {
+      align-self: flex-end;
+      background: #0f766e;
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-quick-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .ai-chip {
+      background: #f1f5f9;
+      color: #0f766e;
+      border: 1px solid #ccfbf1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .ai-chip:hover {
+      background: #ccfbf1;
+      border-color: #99f6e4;
+      transform: translateX(3px);
+    }
+
+    .ai-typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      align-self: flex-start;
+    }
+
+    .ai-typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #0f766e;
+      border-radius: 50%;
+      animation: aiPulse 1.2s infinite ease-in-out;
+    }
+
+    .ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes aiPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .ai-chat-footer {
+      padding: 10px 12px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ai-input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .ai-input:focus {
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .ai-send-btn {
+      background: #0f766e;
+      color: #ffffff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .ai-send-btn:hover {
+      background: #115e59;
+    }
+
+    .ai-send-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
   </style>
 
   <!-- Script Midtrans Snap Sandbox -->
@@ -772,7 +1047,6 @@
             <textarea id="shippingAddress" class="form-control" rows="2" placeholder="Masukkan nama jalan, nomor rumah, RT/RW, patokan..." required>Jl. Merdeka No. 45 (Samping Coffee Lab)</textarea>
           </div>
 
-          <!-- [KODE BARU] Input Kota/Kabupaten dan Kode Pos untuk melengkapi alamat pengiriman -->
           <div class="form-row" style="margin-bottom: 18px;">
             <div class="form-group">
               <label for="shippingCity">Kota / Kabupaten</label>
@@ -817,7 +1091,7 @@
           </div>
         </div>
 
-        <!-- [KODE BARU] Step 3: Catatan & Pesan Khusus untuk Pesanan -->
+        <!-- Step 3: Catatan & Pesan Khusus untuk Pesanan -->
         <div class="card">
           <div class="card-header">
             <span class="step-num">3</span>
@@ -1422,6 +1696,185 @@
       detailsEl.innerHTML = html;
       receiptModal.classList.add('active');
     }
+  </script>
+
+  <!-- ==========================================
+       [FITUR AI] WIDGET AI BARISTA CHATBOT (GEMINI)
+       ========================================== -->
+  <!-- Tombol Melayang (FAB) -->
+  <button type="button" class="ai-chat-fab" id="aiChatFab" onclick="toggleAiChat()" aria-label="Tanya Barista AI">
+    <span>✨ Tanya Barista AI</span>
+    <span class="ai-fab-badge">Online</span>
+  </button>
+
+  <!-- Jendela Chat Pop-up -->
+  <div class="ai-chat-window" id="aiChatWindow">
+    <div class="ai-chat-header">
+      <div class="ai-header-left">
+        <div class="ai-avatar">☕</div>
+        <div class="ai-title-wrap">
+          <h3>Kala Barista AI <span class="ai-status-dot"></span></h3>
+          <p>Konsultasi menu & rekomendasi rasa</p>
+        </div>
+      </div>
+      <button type="button" class="ai-close-btn" id="aiCloseBtn" onclick="toggleAiChat(false)" aria-label="Tutup">&times;</button>
+    </div>
+
+    <div class="ai-chat-body" id="aiChatBody">
+      <!-- Pesan Sambutan dari Bot -->
+      <div class="ai-msg bot">
+        Halo Kak! 👋 Saya <strong>Kala Barista AI</strong>. Ada yang bisa saya bantu pilihkan hari ini?
+        <div class="ai-quick-prompts">
+          <div class="ai-chip" onclick="sendAiPrompt('Rekomendasi kopi yang ramah lambung dan tidak terlalu asam?')">
+            ☕ Kopi ramah lambung / low acid?
+          </div>
+          <div class="ai-chip" onclick="sendAiPrompt('Saya butuh kopi yang praktis dan segar siap minum.')">
+            🛵 Kopi praktis & segar?
+          </div>
+          <div class="ai-chip" onclick="sendAiPrompt('Ada kode voucher atau promo diskon apa saja hari ini?')">
+            🏷️ Info promo & kupon aktif?
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Input Chat -->
+    <form class="ai-chat-footer" id="aiChatForm" onsubmit="handleAiSubmit(event)">
+      <input type="text" id="aiInput" class="ai-input" placeholder="Tanya rasa kopi, rekomendasi, promo..." autocomplete="off" required>
+      <button type="submit" class="ai-send-btn" id="aiSendBtn" aria-label="Kirim">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // ==========================================
+    // [FITUR AI] LOGIKA JS AI BARISTA CHATBOT (GEMINI API)
+    // ==========================================
+    window.toggleAiChat = function(forceState) {
+      const chatWindow = document.getElementById('aiChatWindow');
+      const inputEl = document.getElementById('aiInput');
+      if (!chatWindow) return;
+
+      if (typeof forceState === 'boolean') {
+        if (forceState) {
+          chatWindow.classList.add('active');
+          if (inputEl) setTimeout(() => inputEl.focus(), 100);
+        } else {
+          chatWindow.classList.remove('active');
+        }
+      } else {
+        chatWindow.classList.toggle('active');
+        if (chatWindow.classList.contains('active') && inputEl) {
+          setTimeout(() => inputEl.focus(), 100);
+        }
+      }
+    };
+
+    function formatAiText(text) {
+      if (!text) return '';
+      // Format markdown bold **teks** -> <strong>teks</strong>
+      let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Format markdown italic *teks* -> <em>teks</em>
+      formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      // Format baris baru -> <br>
+      formatted = formatted.replace(/\n/g, '<br>');
+      return formatted;
+    }
+
+    function appendMessage(sender, text) {
+      const aiChatBody = document.getElementById('aiChatBody');
+      if (!aiChatBody) return;
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `ai-msg ${sender}`;
+      if (sender === 'bot') {
+        msgDiv.innerHTML = formatAiText(text);
+      } else {
+        msgDiv.textContent = text;
+      }
+      aiChatBody.appendChild(msgDiv);
+      aiChatBody.scrollTop = aiChatBody.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const aiChatBody = document.getElementById('aiChatBody');
+      if (!aiChatBody) return;
+      const indicator = document.createElement('div');
+      indicator.className = 'ai-typing-indicator';
+      indicator.id = 'aiTypingIndicator';
+      indicator.innerHTML = `
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+      `;
+      aiChatBody.appendChild(indicator);
+      aiChatBody.scrollTop = aiChatBody.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('aiTypingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    window.sendAiPrompt = async function(promptText) {
+      if (!promptText || !promptText.trim()) return;
+      
+      toggleAiChat(true);
+
+      const aiInput = document.getElementById('aiInput');
+      const aiSendBtn = document.getElementById('aiSendBtn');
+
+      appendMessage('user', promptText);
+      showTypingIndicator();
+      if (aiInput) {
+        aiInput.value = '';
+        aiInput.disabled = true;
+      }
+      if (aiSendBtn) aiSendBtn.disabled = true;
+
+      try {
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+        const response = await fetch("{{ route('ai.recommend') }}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ message: promptText })
+        });
+
+        const data = await response.json();
+        removeTypingIndicator();
+
+        if (data.status === 'success') {
+          appendMessage('bot', data.reply);
+        } else {
+          appendMessage('bot', '⚠️ ' + (data.message || 'Gagal mendapatkan respon AI.'));
+        }
+      } catch (err) {
+        removeTypingIndicator();
+        appendMessage('bot', '⚠️ Terjadi kendala jaringan: ' + err.message);
+      } finally {
+        if (aiInput) {
+          aiInput.disabled = false;
+          aiInput.focus();
+        }
+        if (aiSendBtn) aiSendBtn.disabled = false;
+      }
+    };
+
+    window.handleAiSubmit = function(e) {
+      if (e) e.preventDefault();
+      const aiInput = document.getElementById('aiInput');
+      if (aiInput) {
+        const text = aiInput.value.trim();
+        if (text) {
+          window.sendAiPrompt(text);
+        }
+      }
+    };
   </script>
 </body>
 </html>
