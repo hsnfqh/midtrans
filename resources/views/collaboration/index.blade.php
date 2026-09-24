@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pipeline Kolaborasi Sales, Presales & BDM</title>
+    <title>Pipeline Sales & Kolaborasi Solusi (Presales, SA & BDM)</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,16 +22,6 @@
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                     },
-                    colors: {
-                        brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#0284c7',
-                            600: '#0369a1',
-                            700: '#075985',
-                            900: '#0c4a6e',
-                        }
-                    }
                 }
             }
         }
@@ -44,12 +34,9 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.65; }
         }
-        .verified-seal {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen font-sans">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen font-sans pb-16">
 
     <!-- Top Navigation Bar -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
@@ -59,14 +46,14 @@
                     <i class="fa-solid fa-layer-group text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-base font-bold text-slate-900 tracking-tight leading-none">Enterprise Presales & BDM Hub</h1>
-                    <span class="text-xs text-slate-500">Pipeline Sales: <strong>Raiza</strong> &bull; BDM Verification Gatekeeper</span>
+                    <h1 class="text-base font-bold text-slate-900 tracking-tight leading-none">Enterprise Sales & Solutions Portal</h1>
+                    <span class="text-xs text-slate-500">Sales Owner: <strong>Raiza</strong> &bull; Kolaborasi Presales, SA & BDM</span>
                 </div>
             </div>
 
-            <!-- Role Switcher for Interactive Live Demo Testing -->
+            <!-- Role Switcher for Live Testing -->
             <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
-                <span class="px-2 text-slate-500 flex items-center gap-1.5 hidden sm:inline-flex">
+                <span class="px-2 text-slate-500 flex items-center gap-1.5 hidden md:inline-flex">
                     <i class="fa-solid fa-user-gear"></i> Simulasi Role:
                 </span>
                 
@@ -77,7 +64,7 @@
 
                 <a href="{{ route('collaboration.index', ['role' => 'bdm']) }}" 
                    class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 {{ $activeRole === 'bdm' ? 'bg-indigo-600 text-white shadow-sm font-bold' : 'text-slate-600 hover:bg-white' }}">
-                    <i class="fa-solid fa-user-tie"></i> BDM Lead (Approver)
+                    <i class="fa-solid fa-user-tie"></i> BDM Reviewer
                 </a>
 
                 <a href="{{ route('collaboration.index', ['role' => 'presales']) }}" 
@@ -127,91 +114,46 @@
             </div>
         @endif
 
-        <!-- Deal Overview & Ownership Banner -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div>
-                <div class="flex flex-wrap items-center gap-2.5 mb-2">
-                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                        {{ $collaboration->project_code }}
-                    </span>
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-tag"></i> Sales Owner: <strong>{{ $collaboration->assigned_by }}</strong>
-                    </span>
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-shield"></i> Reviewer BDM: <strong>{{ $collaboration->assigned_bdm_reviewer }}</strong>
-                    </span>
-                </div>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">{{ $collaboration->project_name }}</h2>
-                <p class="text-xs text-slate-500 mt-1">Klien: <strong class="text-slate-800">{{ $collaboration->client_name }}</strong> &bull; Estimasi Nilai: <strong class="text-slate-800">{{ $collaboration->budget_estimation }}</strong></p>
+        <!-- ========================================================================= -->
+        <!-- 1. CARD: Pipeline Sales & Opportunity (Sesuai Gambar Screenshot) -->
+        <!-- ========================================================================= -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
+            <div class="flex items-center gap-2.5 mb-4">
+                <span class="w-2.5 h-2.5 bg-sky-500 rounded-full inline-block"></span>
+                <h3 class="text-base font-bold text-slate-900">Pipeline Sales & Opportunity</h3>
             </div>
 
-            <!-- Global Pipeline Progress Indicator -->
-            <div class="flex items-center gap-3 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 self-start lg:self-center">
-                <!-- Step 1: Penugasan Teknis -->
-                <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $collaboration->presales_status !== 'pending_upload' && $collaboration->sa_status !== 'pending_upload' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white' }}">
-                        1
-                    </div>
-                    <span class="text-xs font-medium text-slate-700">Pengerjaan Teknis</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Stage -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">STAGE</span>
+                    <div class="text-base font-bold text-slate-900">Qualification</div>
                 </div>
 
-                <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
-
-                <!-- Step 2: Verifikasi BDM -->
-                <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold 
-                        @if($collaboration->bdm_status === 'approved') bg-emerald-500 text-white 
-                        @elseif($collaboration->bdm_status === 'under_review') bg-sky-600 text-white pulse-subtle
-                        @elseif($collaboration->bdm_status === 'revision_needed') bg-rose-500 text-white
-                        @else bg-slate-300 text-slate-600 @endif">
-                        2
+                <!-- Win Probability -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">WIN PROBABILITY</span>
+                    <div class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span> 10%
                     </div>
-                    <span class="text-xs font-semibold 
-                        @if($collaboration->bdm_status === 'approved') text-emerald-700 
-                        @elseif($collaboration->bdm_status === 'under_review') text-sky-700 font-bold
-                        @elseif($collaboration->bdm_status === 'revision_needed') text-rose-700
-                        @else text-slate-500 @endif">
-                        Verifikasi BDM
-                    </span>
                 </div>
 
-                <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+                <!-- Target Closing -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">TARGET CLOSING</span>
+                    <div class="text-base font-bold text-slate-900">23 Oct 2026</div>
+                </div>
 
-                <!-- Step 3: Sales Release -->
-                <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold {{ $collaboration->sales_status === 'ready_for_sales' || $collaboration->sales_status === 'sent_to_client' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400' }}">
-                        3
-                    </div>
-                    <span class="text-xs font-medium {{ $collaboration->sales_status === 'ready_for_sales' || $collaboration->sales_status === 'sent_to_client' ? 'text-emerald-700 font-bold' : 'text-slate-400' }}">
-                        Rilis ke Sales
-                    </span>
+                <!-- BDM Reviewer PIC -->
+                <div class="bg-indigo-50/60 p-4 rounded-xl border border-indigo-100 shadow-xs sm:col-span-3 lg:col-span-1">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-900/60 block mb-1">BDM REVIEWER / PENDAMPING</span>
+                    <div class="text-xs font-bold text-indigo-950 truncate">{{ $collaboration->assigned_bdm_reviewer }}</div>
                 </div>
             </div>
-        </div>
-
-        <!-- Role Notification Context Bar -->
-        <div class="rounded-xl p-3.5 px-4 text-xs flex items-center justify-between border
-            @if($activeRole === 'sales') bg-emerald-50 border-emerald-200 text-emerald-900
-            @elseif($activeRole === 'bdm') bg-indigo-50 border-indigo-200 text-indigo-900
-            @elseif($activeRole === 'presales') bg-sky-50 border-sky-200 text-sky-900
-            @else bg-amber-50 border-amber-200 text-amber-900 @endif">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-circle-dot @if($activeRole === 'sales') text-emerald-600 @elseif($activeRole === 'bdm') text-indigo-600 @elseif($activeRole === 'presales') text-sky-600 @else text-amber-600 @endif"></i>
-                <span>
-                    Anda sedang melihat sebagai <strong>
-                    @if($activeRole === 'sales') Raiza (Sales / Account Executive)
-                    @elseif($activeRole === 'bdm') BDM Lead (Approver)
-                    @elseif($activeRole === 'presales') Akbar (Pre-Sales Specialist)
-                    @else Aris Sadewo (Solution Architect)
-                    @endif</strong>.
-                </span>
-            </div>
-            <span class="text-[11px] opacity-75 font-medium">Gunakan switcher di pojok kanan atas untuk berpindah role kapan saja.</span>
         </div>
 
         <!-- ========================================================================= -->
-        <!-- CORE CARD: Kolaborasi Teknis Solusi (Presales & Solution Architect) -->
-        <!-- Sesuai dengan screenshot acuan user + dipercantik modern -->
+        <!-- 2. CARD: Kolaborasi Teknis Solusi (Presales, SA & BDM Reviewer) -->
         <!-- ========================================================================= -->
         <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
             
@@ -219,21 +161,20 @@
             <div class="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between bg-white">
                 <div class="flex items-center gap-2.5">
                     <span class="w-1.5 h-5 bg-rose-700 rounded-full inline-block"></span>
-                    <h3 class="text-base font-bold text-slate-900">Kolaborasi Teknis Solusi (Presales & Solution Architect)</h3>
+                    <h3 class="text-base font-bold text-slate-900">Kolaborasi Teknis Solusi (Presales & Solution Architect & BDM)</h3>
                 </div>
                 
                 <!-- Button: Ubah Penugasan Tim & Reviewer BDM -->
                 <button type="button" onclick="openModal('assignmentModal')" class="text-xs font-bold text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-pen-to-square"></i> Ubah Penugasan Tim & BDM
+                    <i class="fa-solid fa-user-plus text-indigo-600"></i> Ubah Penugasan Tim & BDM
                 </button>
             </div>
 
-            <!-- Two Column Technical Cards -->
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/40">
+            <!-- 3 Column Collaboration Cards: Presales, SA, & BDM Pendamping/Reviewer -->
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 bg-slate-50/40">
 
                 <!-- 1. PRE-SALES SPECIALIST CARD -->
                 <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between relative transition hover:border-slate-300">
-                    
                     <div>
                         <!-- Header & Status Badge -->
                         <div class="flex items-start justify-between gap-2 mb-2">
@@ -245,19 +186,19 @@
                             <!-- Dynamic Presales Status Badge -->
                             <div>
                                 @if($collaboration->presales_status === 'pending_upload')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                         Menunggu Proposal & BoQ
                                     </span>
                                 @elseif($collaboration->presales_status === 'submitted_to_bdm')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200 pulse-subtle">
-                                        <i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Sedang Diverifikasi BDM
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 pulse-subtle">
+                                        <i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Verifikasi BDM
                                     </span>
                                 @elseif($collaboration->presales_status === 'revision_required')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Perlu Revisi Pre-Sales
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Perlu Revisi
                                     </span>
                                 @elseif($collaboration->presales_status === 'approved_by_bdm')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <i class="fa-solid fa-circle-check"></i> Disetujui BDM
                                     </span>
                                 @endif
@@ -277,14 +218,14 @@
                         <!-- Uploaded File Preview if any -->
                         @if($collaboration->presales_file_name)
                             <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 flex items-center justify-between text-xs">
-                                <div class="flex items-center gap-2.5 truncate">
-                                    <i class="fa-solid fa-file-pdf text-rose-600 text-lg"></i>
+                                <div class="flex items-center gap-2 truncate">
+                                    <i class="fa-solid fa-file-pdf text-rose-600 text-base"></i>
                                     <div class="truncate">
-                                        <div class="font-semibold text-slate-800 truncate">{{ $collaboration->presales_file_name }}</div>
+                                        <div class="font-semibold text-slate-800 truncate text-[11px]">{{ $collaboration->presales_file_name }}</div>
                                         <span class="text-[10px] text-slate-500">Disubmit: {{ $collaboration->presales_submitted_at ? $collaboration->presales_submitted_at->format('H:i') : 'Baru saja' }}</span>
                                     </div>
                                 </div>
-                                <span class="text-[11px] font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">Ready</span>
+                                <span class="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">Ready</span>
                             </div>
                         @endif
                     </div>
@@ -296,9 +237,8 @@
                         </button>
 
                         <div class="flex items-center gap-2">
-                            <!-- Bottom Status Button / Badge -->
                             @if($collaboration->presales_status === 'pending_upload')
-                                <button onclick="openModal('presalesModal')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition shadow-sm">
+                                <button onclick="openModal('presalesModal')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition shadow-xs">
                                     <i class="fa-regular fa-clock"></i> Upload Berkas Pre-Sales
                                 </button>
                             @elseif($collaboration->presales_status === 'submitted_to_bdm')
@@ -311,7 +251,7 @@
                                 </button>
                             @elseif($collaboration->presales_status === 'approved_by_bdm')
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    <i class="fa-solid fa-check-double"></i> Berkas Terverifikasi
+                                    <i class="fa-solid fa-check-double"></i> Terverifikasi
                                 </span>
                             @endif
                         </div>
@@ -320,7 +260,6 @@
 
                 <!-- 2. SOLUTION ARCHITECT CARD -->
                 <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between relative transition hover:border-slate-300">
-                    
                     <div>
                         <!-- Header & Status Badge -->
                         <div class="flex items-start justify-between gap-2 mb-2">
@@ -332,19 +271,19 @@
                             <!-- Dynamic SA Status Badge -->
                             <div>
                                 @if($collaboration->sa_status === 'pending_upload')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                         Menunggu Desain Topologi
                                     </span>
                                 @elseif($collaboration->sa_status === 'submitted_to_bdm')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200 pulse-subtle">
-                                        <i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Sedang Diverifikasi BDM
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 pulse-subtle">
+                                        <i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Verifikasi BDM
                                     </span>
                                 @elseif($collaboration->sa_status === 'revision_required')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Perlu Revisi Topologi
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Perlu Revisi
                                     </span>
                                 @elseif($collaboration->sa_status === 'approved_by_bdm')
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <i class="fa-solid fa-circle-check"></i> Disetujui BDM
                                     </span>
                                 @endif
@@ -364,14 +303,14 @@
                         <!-- Uploaded File Preview if any -->
                         @if($collaboration->sa_file_name)
                             <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 flex items-center justify-between text-xs">
-                                <div class="flex items-center gap-2.5 truncate">
-                                    <i class="fa-solid fa-diagram-project text-indigo-600 text-lg"></i>
+                                <div class="flex items-center gap-2 truncate">
+                                    <i class="fa-solid fa-diagram-project text-indigo-600 text-base"></i>
                                     <div class="truncate">
-                                        <div class="font-semibold text-slate-800 truncate">{{ $collaboration->sa_file_name }}</div>
+                                        <div class="font-semibold text-slate-800 truncate text-[11px]">{{ $collaboration->sa_file_name }}</div>
                                         <span class="text-[10px] text-slate-500">Disubmit: {{ $collaboration->sa_submitted_at ? $collaboration->sa_submitted_at->format('H:i') : 'Baru saja' }}</span>
                                     </div>
                                 </div>
-                                <span class="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">Ready</span>
+                                <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">Ready</span>
                             </div>
                         @endif
                     </div>
@@ -383,9 +322,8 @@
                         </button>
 
                         <div class="flex items-center gap-2">
-                            <!-- Bottom Status Button / Badge -->
                             @if($collaboration->sa_status === 'pending_upload')
-                                <button onclick="openModal('saModal')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition shadow-sm">
+                                <button onclick="openModal('saModal')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition shadow-xs">
                                     <i class="fa-regular fa-clock"></i> Upload Desain Arsitek
                                 </button>
                             @elseif($collaboration->sa_status === 'submitted_to_bdm')
@@ -398,10 +336,79 @@
                                 </button>
                             @elseif($collaboration->sa_status === 'approved_by_bdm')
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    <i class="fa-solid fa-check-double"></i> Desain Terverifikasi
+                                    <i class="fa-solid fa-check-double"></i> Terverifikasi
                                 </span>
                             @endif
                         </div>
+                    </div>
+                </div>
+
+                <!-- 3. BDM REVIEWER / PENDAMPING SPECIALIST CARD -->
+                <div class="bg-white rounded-xl p-5 border border-indigo-200/90 shadow-sm flex flex-col justify-between relative transition hover:border-indigo-300">
+                    <div>
+                        <!-- Header & Status Badge -->
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-500">BDM Reviewer / Pendamping</span>
+                                <h4 class="text-base font-bold text-slate-900">{{ $collaboration->assigned_bdm_reviewer }}</h4>
+                            </div>
+
+                            <!-- BDM Review Status Badge -->
+                            <div>
+                                @if($collaboration->bdm_status === 'pending_submission')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                        Menunggu Teknis
+                                    </span>
+                                @elseif($collaboration->bdm_status === 'under_review')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 pulse-subtle">
+                                        <i class="fa-solid fa-spinner fa-spin text-[10px]"></i> Sedang Diverifikasi
+                                    </span>
+                                @elseif($collaboration->bdm_status === 'revision_needed')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Minta Revisi
+                                    </span>
+                                @elseif($collaboration->bdm_status === 'approved')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fa-solid fa-circle-check"></i> Approved & Siap Sales
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-500 mb-3">Tanggung Jawab: <span class="font-medium text-slate-700">Validasi Margin Komersial & Kelayakan Solusi.</span></p>
+
+                        <!-- BDM Assignment Note Box -->
+                        <div class="bg-indigo-50/50 border border-indigo-200/80 rounded-lg p-3.5 text-xs text-indigo-950 mb-4">
+                            <p class="italic font-medium">"Mohon asistensi kelayakan komersial dan validasi akhir proposal sebelum dirilis ke Sales."</p>
+                            <span class="block mt-2 text-[11px] text-indigo-700/80">
+                                Ditugaskan: {{ $collaboration->assigned_at ? $collaboration->assigned_at->format('d M Y H:i') : '24 Sep 2026 09:47' }} (oleh {{ $collaboration->assigned_by }})
+                            </span>
+                        </div>
+
+                        <!-- Reviewer Info -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 text-xs space-y-1">
+                            <div class="flex items-center justify-between text-slate-600">
+                                <span>Email PIC:</span>
+                                <span class="font-semibold text-slate-800">{{ $collaboration->assigned_bdm_email }}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-600">
+                                <span>Status Rilis:</span>
+                                <span class="font-bold {{ $collaboration->sales_status === 'ready_for_sales' ? 'text-emerald-600' : 'text-slate-500' }}">
+                                    {{ $collaboration->sales_status === 'ready_for_sales' ? 'Unlocked (Siap ke Klien)' : 'Locked (Menunggu Approval)' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <button type="button" onclick="openModal('assignmentModal')" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+                            Ganti PIC BDM
+                        </button>
+
+                        <a href="#bdm-panel" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition">
+                            <i class="fa-solid fa-gavel"></i> Buka Panel Keputusan BDM
+                        </a>
                     </div>
                 </div>
 
@@ -409,18 +416,18 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- TAHAP 2: GERBANG VERIFIKASI BDM REVIEWER -->
+        <!-- TAHAP 2: GERBANG VERIFIKASI & PANEL AKSI BDM -->
         <!-- ========================================================================= -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div id="bdm-panel" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
             <div class="px-6 py-4.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/70">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-slate-900">Gerbang Verifikasi BDM Reviewer (Quality Gate)</h3>
+                        <h3 class="text-base font-bold text-slate-900">Panel Verifikasi BDM Reviewer (Quality Gate)</h3>
                         <p class="text-xs text-slate-500">
-                            PIC Reviewer ditunjuk oleh Raiza: <strong class="text-indigo-900">{{ $collaboration->assigned_bdm_reviewer }}</strong> ({{ $collaboration->assigned_bdm_email }})
+                            Reviewer Resmi: <strong class="text-indigo-900">{{ $collaboration->assigned_bdm_reviewer }}</strong> ({{ $collaboration->assigned_bdm_email }})
                         </p>
                     </div>
                 </div>
@@ -441,7 +448,7 @@
                         </span>
                     @elseif($collaboration->bdm_status === 'approved')
                         <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Disetujui BDM & Rilis ke Sales
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Disetujui BDM & Siap Sales
                         </span>
                     @endif
                 </div>
@@ -456,7 +463,7 @@
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 mb-1">Menunggu Berkas dari Akbar & Aris Sadewo</h4>
                         <p class="text-xs text-slate-500 max-w-md mx-auto mb-4">
-                            Saat ini Akbar (Pre-Sales) dan Aris Sadewo (SA) sedang menyusun dokumen. Tombol verifikasi BDM akan otomatis aktif begitu tim mengunggah berkas.
+                            Saat ini Akbar (Pre-Sales) dan Aris Sadewo (SA) sedang menyusun proposal dan topologi. Form approval BDM akan aktif otomatis begitu berkas di-upload.
                         </p>
                         <div class="flex items-center justify-center gap-3">
                             <button onclick="openModal('presalesModal')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-sky-600 text-white hover:bg-sky-700 shadow-sm transition">
@@ -515,24 +522,10 @@
                         </div>
                     </div>
 
-                    <!-- BDM Feedback / Status Note (if already reviewed) -->
-                    @if($collaboration->bdm_review_notes)
-                        <div class="mb-6 p-4 rounded-xl border {{ $collaboration->bdm_status === 'approved' ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900' }}">
-                            <div class="flex items-center justify-between text-xs font-bold mb-1">
-                                <span class="flex items-center gap-1.5">
-                                    <i class="fa-solid {{ $collaboration->bdm_status === 'approved' ? 'fa-circle-check text-emerald-600' : 'fa-triangle-exclamation text-rose-600' }}"></i>
-                                    Catatan Evaluasi BDM (oleh {{ $collaboration->bdm_reviewed_by ?: $collaboration->assigned_bdm_reviewer }})
-                                </span>
-                                <span class="text-[10px] opacity-75">{{ $collaboration->bdm_reviewed_at ? $collaboration->bdm_reviewed_at->format('d M Y H:i') : '' }}</span>
-                            </div>
-                            <p class="text-xs">{{ $collaboration->bdm_review_notes }}</p>
-                        </div>
-                    @endif
-
                     <!-- BDM Decision Action Form -->
                     <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
                         <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-gavel text-indigo-600"></i> Panel Aksi Keputusan BDM
+                            <i class="fa-solid fa-gavel text-indigo-600"></i> Keputusan Evaluasi BDM
                         </h4>
 
                         <form action="{{ route('collaboration.bdmAction', $collaboration->id) }}" method="POST" class="space-y-4">
@@ -541,7 +534,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Verifikator BDM (Sesuai Akun Login):</label>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Verifikator BDM:</label>
                                     <input type="text" name="bdm_name" value="{{ $collaboration->assigned_bdm_reviewer }}" class="w-full rounded-lg border-slate-300 text-xs p-2.5 border bg-white font-medium text-slate-800" required>
                                 </div>
                                 <div>
@@ -560,152 +553,15 @@
                             </div>
 
                             <div class="flex flex-wrap items-center justify-end gap-3 pt-2">
-                                <!-- Reject / Request Revision Button -->
                                 <button type="submit" name="action" value="revision" class="px-4 py-2.5 rounded-lg text-xs font-bold bg-white text-rose-700 border border-rose-300 hover:bg-rose-50 shadow-sm transition flex items-center gap-1.5">
                                     <i class="fa-solid fa-rotate-left"></i> Tolak & Minta Revisi
                                 </button>
 
-                                <!-- Approve & Release Button -->
                                 <button type="submit" name="action" value="approve" class="px-5 py-2.5 rounded-lg text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5">
                                     <i class="fa-solid fa-circle-check"></i> Approve (Setujui & Rilis ke Raiza)
                                 </button>
                             </div>
                         </form>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- ========================================================================= -->
-        <!-- TAHAP 3: DASHBOARD SALES (RAIZA - ACCOUNT EXECUTIVE) -->
-        <!-- ========================================================================= -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-            <div class="px-6 py-4.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/70">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
-                        <i class="fa-solid fa-briefcase"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-bold text-slate-900">Dashboard Sales Owner (Raiza - Account Executive)</h3>
-                        <p class="text-xs text-slate-500">Proposal teknis & BoQ resmi siap digunakan setelah lulus verifikasi BDM.</p>
-                    </div>
-                </div>
-
-                <!-- Sales Status Indicator Badge -->
-                <div>
-                    @if($collaboration->sales_status === 'locked_waiting_bdm')
-                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300">
-                            <i class="fa-solid fa-lock text-slate-400"></i> Terkunci (Menunggu BDM {{ $collaboration->assigned_bdm_reviewer }})
-                        </span>
-                    @elseif($collaboration->sales_status === 'ready_for_sales')
-                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                            <i class="fa-solid fa-lock-open text-emerald-600"></i> Dokumen Terbuka - Siap Dikirim ke Klien
-                        </span>
-                    @elseif($collaboration->sales_status === 'sent_to_client')
-                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300">
-                            <i class="fa-solid fa-paper-plane text-blue-600"></i> Sudah Resmi Dikirimkan ke Klien
-                        </span>
-                    @endif
-                </div>
-            </div>
-
-            <div class="p-6">
-                @if($collaboration->sales_status === 'locked_waiting_bdm')
-                    <!-- LOCKED STATE VIEW FOR RAIZA (SALES) -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
-                        <div class="w-12 h-12 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <i class="fa-solid fa-lock text-xl"></i>
-                        </div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-1">Paket Dokumen Proposal Belum Dapat Dirilis</h4>
-                        <p class="text-xs text-slate-500 max-w-lg mx-auto mb-4">
-                            Halo <strong>Raiza</strong>, berkas teknis dari Akbar dan Aris Sadewo harus melalui verifikasi <strong>{{ $collaboration->assigned_bdm_reviewer }}</strong> terlebih dahulu untuk memastikan validasi margin & arsitektur sebelum Anda serahkan ke klien.
-                        </p>
-                        
-                        <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 text-xs font-medium">
-                            <i class="fa-solid fa-circle-info text-sky-600"></i> Status Saat Ini: 
-                            <strong class="font-bold">
-                                @if($collaboration->bdm_status === 'under_review') 
-                                    🟡 Sedang Diverifikasi oleh {{ $collaboration->assigned_bdm_reviewer }}
-                                @elseif($collaboration->bdm_status === 'revision_needed') 
-                                    🔴 BDM Meminta Revisi Teknis ke Presales/SA
-                                @else 
-                                    ⏳ Menunggu Akbar & Aris Sadewo Upload Dokumen
-                                @endif
-                            </strong>
-                        </div>
-                    </div>
-                @else
-                    <!-- UNLOCKED / APPROVED STATE FOR RAIZA (SALES) -->
-                    <div class="space-y-6">
-                        
-                        <!-- Official BDM Verification Certificate / Stamp -->
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-5 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl font-bold border border-white/30">
-                                    <i class="fa-solid fa-award"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-0.5">
-                                        <span class="text-[11px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-900/40 border border-white/20">
-                                            BDM Quality Assurance Passed
-                                        </span>
-                                    </div>
-                                    <h4 class="text-base font-extrabold">Paket Proposal & BoQ Resmi Disetujui BDM</h4>
-                                    <p class="text-xs text-emerald-100">
-                                        Diverifikasi oleh <strong>{{ $collaboration->bdm_reviewed_by ?: $collaboration->assigned_bdm_reviewer }}</strong> pada {{ $collaboration->bdm_reviewed_at ? $collaboration->bdm_reviewed_at->format('d M Y H:i') : '' }} WIB.
-                                    </p>
-                                </div>
-                            </div>
-
-                            @if($collaboration->sales_status !== 'sent_to_client')
-                                <form action="{{ route('collaboration.salesSend', $collaboration->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-white text-emerald-900 font-bold text-xs hover:bg-emerald-50 shadow-md transition flex items-center gap-2">
-                                        <i class="fa-solid fa-paper-plane text-emerald-700"></i> Finalize & Kirim ke Klien
-                                    </button>
-                                </form>
-                            @else
-                                <div class="bg-white/20 px-4 py-2 rounded-xl border border-white/30 text-xs font-bold flex items-center gap-2">
-                                    <i class="fa-solid fa-check"></i> Sudah Dikirim ke Klien ({{ $collaboration->sales_delivered_at ? $collaboration->sales_delivered_at->format('d M Y H:i') : '' }})
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Deliverables Ready for Sales -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- File 1: Proposal & BoQ -->
-                            <div class="bg-slate-50 p-4.5 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm hover:bg-white transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl">
-                                        <i class="fa-solid fa-file-pdf"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs font-bold text-slate-900">{{ $collaboration->presales_file_name ?: 'Proposal_Teknis_BoQ_Final.pdf' }}</div>
-                                        <span class="text-[11px] text-slate-500">Penyusun: Akbar (Pre-Sales Specialist)</span>
-                                    </div>
-                                </div>
-                                <button type="button" class="text-xs px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold flex items-center gap-1.5 shadow-sm">
-                                    <i class="fa-solid fa-download"></i> Unduh
-                                </button>
-                            </div>
-
-                            <!-- File 2: Topology Design -->
-                            <div class="bg-slate-50 p-4.5 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm hover:bg-white transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl">
-                                        <i class="fa-solid fa-diagram-project"></i>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs font-bold text-slate-900">{{ $collaboration->sa_file_name ?: 'High_Level_Design_Topology.pdf' }}</div>
-                                        <span class="text-[11px] text-slate-500">Penyusun: Aris Sadewo (Solution Architect)</span>
-                                    </div>
-                                </div>
-                                <button type="button" class="text-xs px-3.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold flex items-center gap-1.5 shadow-sm">
-                                    <i class="fa-solid fa-download"></i> Unduh
-                                </button>
-                            </div>
-                        </div>
-
                     </div>
                 @endif
             </div>
@@ -737,7 +593,7 @@
                 <!-- 1. BDM Reviewer Selector -->
                 <div class="bg-indigo-50/50 border border-indigo-200/80 rounded-xl p-4">
                     <label class="block text-xs font-bold text-indigo-950 mb-1.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-shield text-indigo-600"></i> Pilih PIC BDM Reviewer:
+                        <i class="fa-solid fa-user-shield text-indigo-600"></i> Pilih PIC BDM Reviewer / Pendamping:
                     </label>
                     <select name="assigned_bdm_reviewer" class="w-full text-xs font-medium rounded-lg border-slate-300 border p-2.5 bg-white text-slate-800 focus:ring-indigo-500 focus:border-indigo-500">
                         @foreach($bdmList as $bdm)
@@ -746,7 +602,7 @@
                             </option>
                         @endforeach
                     </select>
-                    <span class="block mt-1 text-[11px] text-indigo-700/80">BDM yang dipilih akan bertugas memverifikasi dokumen sebelum dirilis ke Sales.</span>
+                    <span class="block mt-1 text-[11px] text-indigo-700/80">BDM yang dipilih akan mendampingi dan memverifikasi kelayakan BoQ sebelum proposal dibuka ke Sales.</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -772,7 +628,7 @@
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition">
-                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Perubahan
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Penugasan
                     </button>
                 </div>
             </form>
@@ -809,11 +665,6 @@
                         <p class="text-xs text-slate-600">Pilih file proposal atau gunakan simulasi default</p>
                         <input type="file" name="presales_file" class="text-xs text-slate-500 mt-2 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
                     </div>
-                </div>
-
-                <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
-                    <span>Setelah di-submit, status akan otomatis berubah menjadi <strong>"Sedang Diverifikasi BDM"</strong>.</span>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-2">
@@ -858,11 +709,6 @@
                         <p class="text-xs text-slate-600">Pilih file diagram arsitektur atau gunakan simulasi default</p>
                         <input type="file" name="sa_file" class="text-xs text-slate-500 mt-2 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     </div>
-                </div>
-
-                <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
-                    <span>Setelah di-submit, status akan otomatis berubah menjadi <strong>"Sedang Diverifikasi BDM"</strong>.</span>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-2">

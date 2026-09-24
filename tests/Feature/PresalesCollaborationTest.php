@@ -12,8 +12,9 @@ class PresalesCollaborationTest extends TestCase
     {
         $response = $this->get('/collaboration');
         $response->assertStatus(200);
-        $response->assertSee('Kolaborasi Teknis Solusi (Presales & Solution Architect)', false);
-        $response->assertSee('Gerbang Verifikasi BDM Reviewer', false);
+        $response->assertSee('Pipeline Sales & Opportunity', false);
+        $response->assertSee('Kolaborasi Teknis Solusi', false);
+        $response->assertSee('BDM Reviewer / Pendamping', false);
     }
 
     public function test_sales_can_update_team_assignment_and_select_bdm(): void
