@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 
+use App\Http\Controllers\PresalesCollaborationController;
+
 Route::get('/', [PaymentController::class, 'index'])->name('payment.index');
 Route::post('/payment/snap-token', [PaymentController::class, 'createSnapToken'])->name('payment.snapToken');
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
@@ -13,3 +15,12 @@ Route::get('/orders/{orderId}/email', [PaymentController::class, 'previewEmail']
 
 // [FITUR AI] Endpoint Chatbot Rekomendasi Produk menggunakan Google Gemini API
 Route::post('/ai/recommend', [PaymentController::class, 'chatRecommend'])->name('ai.recommend');
+
+// [FITUR KOLABORASI TEKNIS & VERIFIKASI BDM TAHAP 2]
+Route::get('/collaboration', [PresalesCollaborationController::class, 'index'])->name('collaboration.index');
+Route::post('/collaboration/{id}/presales-upload', [PresalesCollaborationController::class, 'uploadPresales'])->name('collaboration.presalesUpload');
+Route::post('/collaboration/{id}/sa-upload', [PresalesCollaborationController::class, 'uploadSa'])->name('collaboration.saUpload');
+Route::post('/collaboration/{id}/bdm-action', [PresalesCollaborationController::class, 'bdmAction'])->name('collaboration.bdmAction');
+Route::post('/collaboration/{id}/sales-send', [PresalesCollaborationController::class, 'salesSend'])->name('collaboration.salesSend');
+Route::post('/collaboration/{id}/reset', [PresalesCollaborationController::class, 'resetDemo'])->name('collaboration.reset');
+
