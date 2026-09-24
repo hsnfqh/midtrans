@@ -18,6 +18,8 @@ class PresalesCollaboration extends Model
         'assigned_by',
         'assigned_at',
         'budget_estimation',
+        'assigned_bdm_reviewer',
+        'assigned_bdm_email',
         'presales_name',
         'presales_role',
         'presales_instructions',

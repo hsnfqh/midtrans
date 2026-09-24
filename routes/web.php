@@ -18,6 +18,7 @@ Route::post('/ai/recommend', [PaymentController::class, 'chatRecommend'])->name(
 
 // [FITUR KOLABORASI TEKNIS & VERIFIKASI BDM TAHAP 2]
 Route::get('/collaboration', [PresalesCollaborationController::class, 'index'])->name('collaboration.index');
+Route::post('/collaboration/{id}/assignment', [PresalesCollaborationController::class, 'updateAssignment'])->name('collaboration.updateAssignment');
 Route::post('/collaboration/{id}/presales-upload', [PresalesCollaborationController::class, 'uploadPresales'])->name('collaboration.presalesUpload');
 Route::post('/collaboration/{id}/sa-upload', [PresalesCollaborationController::class, 'uploadSa'])->name('collaboration.saUpload');
 Route::post('/collaboration/{id}/bdm-action', [PresalesCollaborationController::class, 'bdmAction'])->name('collaboration.bdmAction');

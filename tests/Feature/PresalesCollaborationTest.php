@@ -13,7 +13,27 @@ class PresalesCollaborationTest extends TestCase
         $response = $this->get('/collaboration');
         $response->assertStatus(200);
         $response->assertSee('Kolaborasi Teknis Solusi (Presales & Solution Architect)', false);
-        $response->assertSee('Tahap 2: Gerbang Verifikasi & Review BDM', false);
+        $response->assertSee('Gerbang Verifikasi BDM Reviewer', false);
+    }
+
+    public function test_sales_can_update_team_assignment_and_select_bdm(): void
+    {
+        $collaboration = PresalesCollaboration::first();
+        
+        $response = $this->post("/collaboration/{$collaboration->id}/assignment", [
+            'presales_name' => 'Akbar Fauzan',
+            'presales_instructions' => 'Mohon siapkan BoQ Tier-3 Data Center.',
+            'sa_name' => 'Aris Sadewo',
+            'sa_instructions' => 'Rancang arsitektur HA Active-Active.',
+            'assigned_bdm_reviewer' => 'Budi Santoso (BDM Lead - Enterprise & Banking)',
+        ]);
+
+        $response->assertRedirect();
+        
+        $collaboration->refresh();
+        $this->assertEquals('Akbar Fauzan', $collaboration->presales_name);
+        $this->assertEquals('Budi Santoso (BDM Lead - Enterprise & Banking)', $collaboration->assigned_bdm_reviewer);
+        $this->assertEquals('budi.santoso@perusahaan.com', $collaboration->assigned_bdm_email);
     }
 
     public function test_presales_upload_changes_status_to_under_review(): void
