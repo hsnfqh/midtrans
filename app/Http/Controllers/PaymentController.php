@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Mail\PaymentSuccessMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -332,6 +335,8 @@ class PaymentController extends Controller
                 ], 404);
             }
 
+            $prevStatus = $order->status;
+
             if ($transaction == 'capture') {
                 if ($fraud == 'challenge') {
                     $order->status = 'challenge';
@@ -353,6 +358,10 @@ class PaymentController extends Controller
             $order->payment_type = $type;
             $order->payment_response = $notif->getResponse();
             $order->save();
+
+            if ($prevStatus !== 'paid' && $order->status === 'paid') {
+                $this->sendSuccessNotification($order);
+            }
 
             return response()->json([
                 'status'  => 'success',
@@ -379,6 +388,7 @@ class PaymentController extends Controller
                     if ($res && isset($res->transaction_status)) {
                         $trx = $res->transaction_status;
                         $fraud = $res->fraud_status ?? '';
+                        $prevStatus = $order->status;
 
                         if ($trx === 'settlement' || ($trx === 'capture' && $fraud === 'accept')) {
                             $order->status = 'paid';
@@ -392,6 +402,10 @@ class PaymentController extends Controller
                             $order->payment_type = $res->payment_type;
                         }
                         $order->save();
+
+                        if ($prevStatus !== 'paid' && $order->status === 'paid') {
+                            $this->sendSuccessNotification($order);
+                        }
                     }
                 } catch (\Exception $e) {
                 }
@@ -411,6 +425,7 @@ class PaymentController extends Controller
             $res = Transaction::status($orderId);
             $trx = $res->transaction_status ?? null;
             $fraud = $res->fraud_status ?? '';
+            $prevStatus = $order->status;
 
             if ($trx === 'settlement' || ($trx === 'capture' && $fraud === 'accept')) {
                 $order->status = 'paid';
@@ -424,6 +439,10 @@ class PaymentController extends Controller
                 $order->payment_type = $res->payment_type;
             }
             $order->save();
+
+            if ($prevStatus !== 'paid' && $order->status === 'paid') {
+                $this->sendSuccessNotification($order);
+            }
 
             if (request()->wantsJson()) {
                 return response()->json([
@@ -439,6 +458,29 @@ class PaymentController extends Controller
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
             return redirect()->back();
+        }
+    }
+
+    /**
+     * [FITUR NOTIFIKASI EMAIL]
+     * Mengirim email notifikasi struk / bukti pembayaran lunas secara otomatis
+     * Penerima: Email Pelanggan (dari checkout) & Admin Toko (ahmadhasanfaqih01@gmail.com)
+     */
+    protected function sendSuccessNotification(Order $order)
+    {
+        try {
+            // Gabungkan email pelanggan dan email admin secara unik
+            $recipients = array_filter(array_unique([
+                $order->customer_email,
+                'ahmadhasanfaqih01@gmail.com'
+            ]));
+
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new PaymentSuccessMail($order));
+            }
+        } catch (\Exception $e) {
+            // Catat log jika terjadi kendala pengiriman tanpa mengganggu alur sistem
+            Log::error("Gagal mengirim email notifikasi transaksi #{$order->order_id}: " . $e->getMessage());
         }
     }
 
